@@ -14,6 +14,7 @@ public class LogBarrierFunction extends ConvexFunction
     private final double[] gw;
     private final double[][] hw;
     private final int n;
+    private final boolean zh;
 
     LogBarrierFunction(int nd, Collection<ConvexFunction> cf) {
         if (nd < 1) {
@@ -23,16 +24,19 @@ public class LogBarrierFunction extends ConvexFunction
         f = new ConvexFunction[m];
         Iterator e = cf.iterator();
         int j = 0;
+        boolean allZH = true;
         while (e.hasNext()) {
             f[j] = (ConvexFunction)(e.next());
             if (f[j].dim() != nd) {
                 throw new DimensionMismatchException(f[j].dim(), nd);
             }
+            if (!f[j].zeroHessian()) allZH = false;
             j += 1;
         }
-        n = nd
+        n = nd;
         gw = new double[n];
         hw = new double[n][n];
+        zh = allZH;
     }
 
     @Override
@@ -86,6 +90,7 @@ public class LogBarrierFunction extends ConvexFunction
             Arrays.fill(h[j], 0.0);
         }
         for (ConvexFunction fi: f) {
+            if (fi.zeroHessian()) continue;
             double vi = fi.value(x);
             fi.fillGradient(x, gw);
             fi.fillHessian(x, hw);

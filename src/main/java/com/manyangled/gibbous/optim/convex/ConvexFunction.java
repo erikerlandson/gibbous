@@ -9,6 +9,8 @@ public abstract class ConvexFunction implements MultivariateFunction {
     public abstract void fillGradient(final double[] x, double[] g);
     public abstract void fillHessian(final double[] x, double[][] h);
 
+    public boolean zeroHessian() { return false; }
+
     public double[] gradient(final double[] x) {
         if (x.length != dim()) {
             throw new DimensionMismatchException(x.length, dim());
