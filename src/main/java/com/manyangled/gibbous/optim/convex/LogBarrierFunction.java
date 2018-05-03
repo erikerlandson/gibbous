@@ -15,19 +15,22 @@ public class LogBarrierFunction extends ConvexFunction
     private final double[][] hw;
     private final int n;
 
-    LogBarrierFunction(Collection<ConvexFunction> cf) {
+    LogBarrierFunction(int nd, Collection<ConvexFunction> cf) {
+        if (nd < 1) {
+            throw new IllegalArgumentException("domain dimension nd must be positive");
+        }
         int m = cf.size();
         f = new ConvexFunction[m];
         Iterator e = cf.iterator();
         int j = 0;
         while (e.hasNext()) {
             f[j] = (ConvexFunction)(e.next());
-            if (f[j].dim() != f[0].dim()) {
-                throw new DimensionMismatchException(f[j].dim(), f[0].dim());
+            if (f[j].dim() != nd) {
+                throw new DimensionMismatchException(f[j].dim(), nd);
             }
             j += 1;
         }
-        n = (m > 0) ? f[0].dim() : 0;
+        n = nd
         gw = new double[n];
         hw = new double[n][n];
     }
