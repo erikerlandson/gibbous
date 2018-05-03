@@ -1,3 +1,4 @@
+package com.manyangled.gibbous.optim.convex;
 
 import org.apache.commons.math3.analysis.MultivariateFunction;
 
