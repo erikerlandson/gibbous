@@ -45,6 +45,9 @@ public class LogBarrierFunction extends ConvexFunction
     }
 
     @Override
+    public boolean zeroHessian() { return zh; }
+
+    @Override
     public double value(final double[] x) {
         double v = 0.0;
         for (ConvexFunction fi: f) {
