@@ -1,20 +1,29 @@
 package com.manyangled.gibbous.optim.convex;
 
 import org.apache.commons.math3.analysis.MultivariateFunction;
+import org.apache.commons.math3.exception.DimensionMismatchException;
 
 public abstract class ConvexFunction implements MultivariateFunction {
-    abstract void grad(final double[] x, double[] g);
-    abstract void hess(final double[] x, double[][] h);
+    public abstract int dim();
 
-    double[] grad(final double[] x) {
-        double[] g = new double[x.length];
-        grad(x, g);
+    public abstract void fillGradient(final double[] x, double[] g);
+    public abstract void fillHessian(final double[] x, double[][] h);
+
+    public double[] gradient(final double[] x) {
+        if (x.length != dim()) {
+            throw new DimensionMismatchException(x.length, dim());
+        }
+        double[] g = new double[dim()];
+        fillGradient(x, g);
         return g;
     }
 
-    double[][] hess(final double[] x) {
-        double[][] h = new double[x.length][x.length];
-        hess(x, h);
+    public double[][] hessian(final double[] x) {
+        if (x.length != dim()) {
+            throw new DimensionMismatchException(x.length, dim());
+        }
+        double[][] h = new double[dim()][dim()];
+        fillHessian(x, h);
         return h;
     }
 }
