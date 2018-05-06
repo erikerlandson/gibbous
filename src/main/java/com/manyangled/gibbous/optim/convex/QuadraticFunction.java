@@ -18,49 +18,41 @@ public class QuadraticFunction extends ConvexFunction
     private final RealVector b;
     private final double c;
     private final int n;
-    
-    QuadraticFunction(double[][] A, double[] b, double c) {
-        int d = b.length;
+
+    QuadraticFunction(RealMatrix A, RealVector b, double c) {
+        int d = b.getDimension();
         if (d < 1) throw new IllegalArgumentException("Dimension must be nonzero");
-        if (A.length != d) throw new DimensionMismatchException(A.length, d);
-        this.A = new Array2DRowRealMatrix(A);
-        MatrixUtils.checkSymmetric(this.A, 1e-6);
-        this.b = new ArrayRealVector(b);
+        if (A.getRowDimension() != d)
+            throw new DimensionMismatchException(A.getRowDimension(), d);
+        MatrixUtils.checkSymmetric(A, 1e-6);
+        this.A = A.copy();
+        this.b = b.copy();
         this.c = c;
-        n = d;
+        this.n = d;
+    }
+
+    QuadraticFunction(double[][] A, double[] b, double c) {
+        this(new Array2DRowRealMatrix(A), new ArrayRealVector(b), c);
     }
 
     @Override
     public int dim() { return n; }
 
     @Override
-    public double value(final double[] x) {
-        if (x.length != n) throw new DimensionMismatchException(x.length, n);
-        RealVector vx = new ArrayRealVector(x);
-        RealVector Ax = new ArrayRealVector(A.operate(vx));
-        double v = 0.5 * Ax.dotProduct(vx);
-        v += b.dotProduct(vx);
+    public double value(final RealVector x) {
+        double v = 0.5 * (A.operate(x)).dotProduct(x);
+        v += b.dotProduct(x);
         v += c;
         return v;
     }
 
     @Override
-    public void fillGradient(final double[] x, double[] g) {
-        if (x.length != n) throw new DimensionMismatchException(x.length, n);
-        if (g.length != n) throw new DimensionMismatchException(g.length, n);
-        double[] Ax = A.operate(x);
-        for (int j = 0; j < n; ++j) {
-            g[j] = Ax[j] + b.getEntry(j);
-        }
+    public RealVector gradient(final RealVector x) {
+        return (A.operate(x)).add(b);
     }
 
     @Override
-    public void fillHessian(final double[] x, double[][] h) {
-        if (x.length != n) throw new DimensionMismatchException(x.length, n);
-        if (h.length != n) throw new DimensionMismatchException(h.length, n);
-        for (int j = 0; j < n;  ++j) {
-            if (h[j].length != n) throw new DimensionMismatchException(h[j].length, n);
-            for (int k = 0; k < n; ++k) h[j][k] = A.getEntry(j, k);
-        }
+    public RealMatrix hessian(final RealVector x) {
+        return A.copy();
     }
 }
