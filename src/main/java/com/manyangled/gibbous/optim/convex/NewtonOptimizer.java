@@ -4,18 +4,26 @@ import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.optim.PointValuePair;
 
 public class NewtonOptimizer extends ConvexOptimizer {
+    private EqualityConstraint eqConstraint;
+
     protected NewtonOptimizer() {
         super();
     }
 
     @Override
-    protected void parseOptimizationData(OptimizationData... optData) {
-        super.parseOptimizationData(optData);
+    public PointValuePair optimize(OptimizationData... optData) {
+        return super.optimize(optData);
     }
 
     @Override
-    public PointValuePair optimize(OptimizationData... optData) {
-        return super.optimize(optData);
+    protected void parseOptimizationData(OptimizationData... optData) {
+        super.parseOptimizationData(optData);
+        for (OptimizationData data: optData) {
+            if (data instanceof EqualityConstraint) {
+                eqConstraint = (EqualityConstraint)data;
+                continue;
+            }
+        }
     }
 
     @Override
