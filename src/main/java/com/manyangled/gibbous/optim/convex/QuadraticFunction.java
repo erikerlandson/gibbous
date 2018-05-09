@@ -9,11 +9,9 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
-public class QuadraticFunction extends ConvexFunction
-    implements OptimizationData {
+public class QuadraticFunction extends ConvexFunction {
     private final RealMatrix A;
     private final RealVector b;
     private final double c;

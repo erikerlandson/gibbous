@@ -6,11 +6,9 @@ import java.util.Iterator;
 import java.util.Arrays;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
-import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
-public class LogBarrierFunction extends ConvexFunction
-    implements OptimizationData {
+public class LogBarrierFunction extends ConvexFunction {
 
     private final double t;
     private final ConvexFunction f0;

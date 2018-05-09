@@ -4,10 +4,8 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.optim.OptimizationData;
 
-public class LinearFunction extends ConvexFunction
-    implements OptimizationData {
+public class LinearFunction extends ConvexFunction {
     private final RealVector b;
     private final double c;
     private final int n;
