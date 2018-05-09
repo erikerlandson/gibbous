@@ -4,10 +4,10 @@ import org.apache.commons.math3.linear.RealVector;
 
 public class KKTSolution {
     public final RealVector xDelta;
-    public final RealVector nuDelta;
+    public final RealVector nuPlus;
 
-    KKTSolution(final RealVector xd, final RealVector nud) {
+    KKTSolution(final RealVector xd, final RealVector nup) {
         this.xDelta = xd;
-        this.nuDelta = nud;
+        this.nuPlus = nup;
     }
 }
