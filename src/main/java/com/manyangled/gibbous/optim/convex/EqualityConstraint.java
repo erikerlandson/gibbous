@@ -12,7 +12,7 @@ public class EqualityConstraint implements OptimizationData {
     public final RealVector b;
 
     EqualityConstraint(final RealMatrix A, final RealVector b) {
-        int k = A.getColumnDimension();
+        int k = A.getRowDimension();
         if (b.getDimension() != k)
             throw new DimensionMismatchException(b.getDimension(), k);
         this.A = A;
