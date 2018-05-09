@@ -55,6 +55,8 @@ public class NewtonOptimizer extends ConvexOptimizer {
         int n = convexObjective.dim();
         if (eqConstraint != null) {
             int nDual = eqConstraint.b.getDimension();
+            if (nDual >= n)
+                throw new IllegalArgumentException("Rank of constraints must be < domain dimension");
             int nTest = eqConstraint.A.getColumnDimension();
             if ((nDual > 0) && (nTest != n))
                 throw new DimensionMismatchException(nTest, n);
@@ -70,17 +72,54 @@ public class NewtonOptimizer extends ConvexOptimizer {
 
     @Override
     public PointValuePair doOptimize() {
-        int n = convexObjective.dim();
+        final int n = convexObjective.dim();
         if ((eqConstraint == null) || (eqConstraint.b.getDimension() < 1)) {
             // constraints Ax = b are empty
             return null;
         } else {
             // constraints Ax = b are non-empty
-            RealMatrix A = eqConstraint.A;
-            RealVector b = eqConstraint.b;
-            int nDual = b.getDimension();
-            RealVector nuStart = new ArrayRealVector(nDual, 0.0);
-            return null;
+            final RealMatrix A = eqConstraint.A;
+            final RealVector b = eqConstraint.b;
+            final RealMatrix AT = A.transpose();
+            final int nDual = b.getDimension();
+            RealVector nu = new ArrayRealVector(nDual, 0.0);
+            RealVector x = xStart;
+            while (true) {
+                RealVector grad = convexObjective.gradient(x);
+                double rNorm = residualNorm(x, nu, grad, A, AT, b);
+                if (rNorm <= epsilon) {
+                    // For properly small epsilon, I believe that (rNorm <= epsilon)
+                    // also implies Ax = b to proper tolerance.
+                    break;
+                }
+                RealMatrix hess = convexObjective.hessian(x);
+                KKTSolution sol = kktSolver.solve(hess, A, AT, grad, A.operate(x).subtract(b));
+                RealVector xDelta = sol.xDelta;
+                RealVector nuDelta = sol.nuPlus.subtract(nu);
+                double t = 1.0;
+                while (true) {
+                    RealVector tx = x.add(xDelta.mapMultiply(t));
+                    RealVector tnu = nu.add(nuDelta.mapMultiply(t));
+                    RealVector tgrad = convexObjective.gradient(tx);
+                    double tNorm = residualNorm(tx, tnu, tgrad, A, AT, b);
+                    if (tNorm <= (1.0 - alpha*t)*rNorm) {
+                        x = tx;
+                        nu = tnu;
+                        break;
+                    }
+                    t = beta * t;
+                }
+            }
+            return new PointValuePair(x.toArray(), convexObjective.value(x));
         }
+    }
+
+    private double residualNorm(
+        RealVector x, RealVector nu, RealVector grad,
+        RealMatrix A, RealMatrix AT, RealVector b) {
+        RealVector r = A.operate(x).subtract(b);
+        RealVector rDual = grad.add(AT.operate(nu));
+        double rr = r.dotProduct(r) + rDual.dotProduct(rDual);
+        return Math.sqrt(rr);
     }
 }
