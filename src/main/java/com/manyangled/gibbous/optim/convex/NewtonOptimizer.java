@@ -13,6 +13,9 @@ public class NewtonOptimizer extends ConvexOptimizer {
     private EqualityConstraint eqConstraint;
     private KKTSolver kktSolver = new SchurKKTSolver();
     private RealVector xStart;
+    private double epsilon = 1e-10;
+    private double alpha = 0.25;
+    private double beta = 0.5;
 
     protected NewtonOptimizer() {
         super();
@@ -33,6 +36,18 @@ public class NewtonOptimizer extends ConvexOptimizer {
             }
             if (data instanceof KKTSolver) {
                 kktSolver = (KKTSolver)data;
+                continue;
+            }
+            if (data instanceof Epsilon) {
+                epsilon = ((Epsilon)data).epsilon;
+                continue;
+            }
+            if (data instanceof Alpha) {
+                alpha = ((Alpha)data).alpha;
+                continue;
+            }
+            if (data instanceof Beta) {
+                beta = ((Beta)data).beta;
                 continue;
             }
         }
