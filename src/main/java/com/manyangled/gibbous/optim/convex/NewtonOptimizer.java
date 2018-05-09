@@ -6,6 +6,7 @@ import org.apache.commons.math3.optim.PointValuePair;
 // Algorithm 10.2
 public class NewtonOptimizer extends ConvexOptimizer {
     private EqualityConstraint eqConstraint;
+    private KKTSolver kktSolver = new SchurKKTSolver();
 
     protected NewtonOptimizer() {
         super();
@@ -22,6 +23,10 @@ public class NewtonOptimizer extends ConvexOptimizer {
         for (OptimizationData data: optData) {
             if (data instanceof EqualityConstraint) {
                 eqConstraint = (EqualityConstraint)data;
+                continue;
+            }
+            if (data instanceof KKTSolver) {
+                kktSolver = (KKTSolver)data;
                 continue;
             }
         }
