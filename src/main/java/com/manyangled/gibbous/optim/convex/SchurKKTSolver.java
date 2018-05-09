@@ -11,7 +11,7 @@ import org.apache.commons.math3.linear.DecompositionSolver;
 // | H AT | | v | = -| g |
 // | A  0 | | w |    | h |
 // where (v, w) are primal/dual delta-x and delta-nu from algorithm 10.2
-public class SchurKKTSolver {
+public class SchurKKTSolver extends KKTSolver {
     public KKTSolution solve(
         final RealMatrix H,
         final RealMatrix A, final RealMatrix AT,
