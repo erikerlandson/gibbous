@@ -3,6 +3,7 @@ package com.manyangled.gibbous.optim.convex;
 import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.optim.PointValuePair;
 
+// Algorithm 10.2
 public class NewtonOptimizer extends ConvexOptimizer {
     private EqualityConstraint eqConstraint;
 
