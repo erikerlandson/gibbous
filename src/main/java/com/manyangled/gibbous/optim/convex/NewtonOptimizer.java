@@ -100,11 +100,11 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, grad);
                 if (sol.lambdaSquared <= (2.0 * epsilon)) break;
                 RealVector xDelta = sol.xDelta;
-                double t = 1.0;
                 double gdd = grad.dotProduct(xDelta);
-                while (true) {
+                for (double t = 1.0 ; ; t *= beta) {
                     RealVector tx = x.add(xDelta.mapMultiply(t));
                     double tv = convexObjective.value(tx);
+                    if (tv == Double.POSITIVE_INFINITY) continue;
                     if (tv <= v + t*alpha*gdd) {
                         x = tx;
                         v = tv;
@@ -114,7 +114,6 @@ public class NewtonOptimizer extends ConvexOptimizer {
                         noStep = true;
                         break;
                     }
-                    t *= beta;
                 }
                 if (noStep) break;
             }
@@ -128,6 +127,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
             final int nDual = b.getDimension();
             RealVector x = xStart;
             RealVector nu = new ArrayRealVector(nDual, 0.0);
+            double v = convexObjective.value(x);
             boolean noStep = false;
             while (true) {
                 incrementIterationCount();
@@ -143,26 +143,27 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, A, AT, grad, A.operate(x).subtract(b));
                 RealVector xDelta = sol.xDelta;
                 RealVector nuDelta = sol.nuPlus.subtract(nu);
-                double t = 1.0;
-                while (true) {
+                for (double t = 1.0 ; ; t *= beta) {
                     RealVector tx = x.add(xDelta.mapMultiply(t));
+                    double tv = convexObjective.value(tx);
+                    if (tv == Double.POSITIVE_INFINITY) continue;
                     RealVector tnu = nu.add(nuDelta.mapMultiply(t));
                     RealVector tgrad = convexObjective.gradient(tx);
                     double tNorm = residualNorm(tx, tnu, tgrad, A, AT, b);
                     if (tNorm <= (1.0 - alpha*t)*rNorm) {
                         x = tx;
                         nu = tnu;
+                        v = tv;
                         break;
                     }
                     if (t < epsilon) {
                         noStep = true;
                         break;
                     }
-                    t *= beta;
                 }
                 if (noStep) break;
             }
-            return new PointValuePair(x.toArray(), convexObjective.value(x));
+            return new PointValuePair(x.toArray(), v);
         }
     }
 
