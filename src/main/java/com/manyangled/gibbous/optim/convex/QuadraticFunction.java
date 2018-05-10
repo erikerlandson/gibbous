@@ -30,7 +30,7 @@ public class QuadraticFunction extends ConvexFunction {
     private final double c;
     private final int n;
 
-    QuadraticFunction(RealMatrix A, RealVector b, double c) {
+    public QuadraticFunction(RealMatrix A, RealVector b, double c) {
         int d = b.getDimension();
         if (d < 1) throw new IllegalArgumentException("Dimension must be nonzero");
         if (A.getRowDimension() != d)
@@ -42,7 +42,7 @@ public class QuadraticFunction extends ConvexFunction {
         this.n = d;
     }
 
-    QuadraticFunction(double[][] A, double[] b, double c) {
+    public QuadraticFunction(double[][] A, double[] b, double c) {
         this(new Array2DRowRealMatrix(A), new ArrayRealVector(b), c);
     }
 

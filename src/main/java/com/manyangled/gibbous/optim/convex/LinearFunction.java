@@ -23,7 +23,7 @@ public class LinearFunction extends ConvexFunction {
     private final double c;
     private final int n;
 
-    LinearFunction(RealVector b, double c) {
+    public LinearFunction(RealVector b, double c) {
         int d = b.getDimension();
         if (d < 1) throw new IllegalArgumentException("Dimension must be nonzero");
         this.b = b;
@@ -31,7 +31,7 @@ public class LinearFunction extends ConvexFunction {
         this.n = d;
     }
 
-    LinearFunction(double[] b, double c) {
+    public LinearFunction(double[] b, double c) {
         this(new ArrayRealVector(b), c);
     }
 

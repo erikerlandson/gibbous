@@ -24,7 +24,7 @@ public class EqualityConstraint implements OptimizationData {
     public final RealMatrix A;
     public final RealVector b;
 
-    EqualityConstraint(final RealMatrix A, final RealVector b) {
+    public EqualityConstraint(final RealMatrix A, final RealVector b) {
         int k = A.getRowDimension();
         if (b.getDimension() != k)
             throw new DimensionMismatchException(b.getDimension(), k);
@@ -32,7 +32,7 @@ public class EqualityConstraint implements OptimizationData {
         this.b = b;
     }
 
-    EqualityConstraint(final double[][] A, final double[] b) {
+    public EqualityConstraint(final double[][] A, final double[] b) {
         this(new Array2DRowRealMatrix(A), new ArrayRealVector(b));
     }
 }

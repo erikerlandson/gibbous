@@ -28,7 +28,7 @@ public class LogBarrierFunction extends ConvexFunction {
     private final ConvexFunction[] f;
     private final int n;
 
-    LogBarrierFunction(double t, ConvexFunction f0, ConvexFunction[] f) {
+    public LogBarrierFunction(double t, ConvexFunction f0, ConvexFunction[] f) {
         this.t = t;
         this.f0 = f0;
         this.n = f0.dim();
@@ -38,7 +38,7 @@ public class LogBarrierFunction extends ConvexFunction {
         }
     }
 
-    LogBarrierFunction(double t, ConvexFunction f0, Collection<ConvexFunction> cf) {
+    public LogBarrierFunction(double t, ConvexFunction f0, Collection<ConvexFunction> cf) {
         this.t = t;
         this.f0 = f0;
         this.n = f0.dim();

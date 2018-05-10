@@ -31,7 +31,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
     private double alpha = 0.25;
     private double beta = 0.5;
 
-    protected NewtonOptimizer() {
+    public NewtonOptimizer() {
         super();
     }
 
