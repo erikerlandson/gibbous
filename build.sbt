@@ -16,7 +16,8 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-math3" % "3.6.1",
   "com.manyangled" %% "gnuplot4s" % "0.1.0-local-deedf561" % Test,
-  "org.scalatest" %% "scalatest" % "3.0.5" % Test
+  "com.novocode" % "junit-interface" % "0.11" % Test
+  //"org.scalatest" %% "scalatest" % "3.0.5" % Test
 )
 
 licenses += ("Apache-2.0", url("http://opensource.org/licenses/Apache-2.0"))
