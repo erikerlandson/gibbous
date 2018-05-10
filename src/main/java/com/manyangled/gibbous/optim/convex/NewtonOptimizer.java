@@ -79,6 +79,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
             RealVector x = xStart;
             double v = convexObjective.value(x);
             while (true) {
+                incrementIterationCount();
                 RealVector grad = convexObjective.gradient(x);
                 RealMatrix hess = convexObjective.hessian(x);
                 KKTSolution sol = kktSolver.solve(hess, grad);
@@ -109,6 +110,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
             RealVector nu = new ArrayRealVector(nDual, 0.0);
             RealVector x = xStart;
             while (true) {
+                incrementIterationCount();
                 RealVector grad = convexObjective.gradient(x);
                 double rNorm = residualNorm(x, nu, grad, A, AT, b);
                 if (rNorm <= epsilon) {
