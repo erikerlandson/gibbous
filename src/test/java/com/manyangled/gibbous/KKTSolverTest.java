@@ -14,12 +14,52 @@ limitations under the License.
 package com.manyangled.gibbous;
 
 import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
+
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.ArrayRealVector;
+
+import com.manyangled.gibbous.optim.convex.KKTSolver;
+import com.manyangled.gibbous.optim.convex.KKTSolution;
+import com.manyangled.gibbous.optim.convex.SchurKKTSolver;
 
 public class KKTSolverTest {
+    private void testWithConstraints(
+        KKTSolver kkts,
+        double[][] Hdata, double[][] Adata, double[] gdata, double[] hdata) {
+        RealMatrix H = new Array2DRowRealMatrix(Hdata);
+        RealMatrix A = new Array2DRowRealMatrix(Adata);
+        RealVector g = new ArrayRealVector(gdata);
+        RealVector h = new ArrayRealVector(hdata);
+        RealMatrix AT = A.transpose();
+        KKTSolution sol = kkts.solve(H, A, AT, g, h);
+        int n = Hdata.length + Adata.length;
+        int Hn = Hdata.length;
+        double[][] Tdata = new double[n][n];
+        for (int j = 0; j < Hn; ++j)
+            for (int k = 0; k < Hn; ++k)
+                Tdata[j][k] = Hdata[j][k];
+        for (int j = 0; j < Adata.length; ++j)
+            for (int k = 0; k < Adata[0].length; ++k) {
+                Tdata[Hn + j][k] = Adata[j][k];
+                Tdata[k][Hn + j] = Adata[j][k];
+            }
+        RealMatrix T = new Array2DRowRealMatrix(Tdata);
+        RealVector t = sol.xDelta.append(sol.nuPlus);
+        RealVector Txt = T.operate(t);
+        RealVector target = g.append(h).mapMultiply(-1.0);
+        assertArrayEquals(target.toArray(), Txt.toArray(), 1e-9);
+    }
+
     @Test
-    public void shouldSucceed() {
-        assertEquals("oh noes!!!", 42, 42);
+    public void testSchurConstrained1() {
+        double[][] H = { { 2.0, 1.0 }, { 1.0, 2.0 } };
+        double[][] A = { { 1.0, 1.0 } };
+        double[] g = { 1.0, 2.0 };
+        double[] h = { 3.0 };
+        testWithConstraints(new SchurKKTSolver(), H, A, g, h);
     }
 }
