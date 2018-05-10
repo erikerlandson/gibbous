@@ -92,6 +92,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
             // Algorithm 9.5: Newton's method (unconstrained)
             RealVector x = xStart;
             double v = convexObjective.value(x);
+            boolean noStep = false;
             while (true) {
                 incrementIterationCount();
                 RealVector grad = convexObjective.gradient(x);
@@ -109,9 +110,13 @@ public class NewtonOptimizer extends ConvexOptimizer {
                         v = tv;
                         break;
                     }
-                    if (t * alpha < epsilon) throw new ConvergenceException();
-                    t = beta * t;
+                    if (t < epsilon) {
+                        noStep = true;
+                        break;
+                    }
+                    t *= beta;
                 }
+                if (noStep) break;
             }
             return new PointValuePair(x.toArray(), v);
         } else {
@@ -121,8 +126,9 @@ public class NewtonOptimizer extends ConvexOptimizer {
             final RealVector b = eqConstraint.b;
             final RealMatrix AT = A.transpose();
             final int nDual = b.getDimension();
-            RealVector nu = new ArrayRealVector(nDual, 0.0);
             RealVector x = xStart;
+            RealVector nu = new ArrayRealVector(nDual, 0.0);
+            boolean noStep = false;
             while (true) {
                 incrementIterationCount();
                 RealVector grad = convexObjective.gradient(x);
@@ -148,9 +154,13 @@ public class NewtonOptimizer extends ConvexOptimizer {
                         nu = tnu;
                         break;
                     }
-                    if (t * alpha < epsilon) throw new ConvergenceException();
-                    t = beta * t;
+                    if (t < epsilon) {
+                        noStep = true;
+                        break;
+                    }
+                    t *= beta;
                 }
+                if (noStep) break;
             }
             return new PointValuePair(x.toArray(), convexObjective.value(x));
         }
