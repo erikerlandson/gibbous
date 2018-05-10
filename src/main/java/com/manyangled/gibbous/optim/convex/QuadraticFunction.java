@@ -24,6 +24,8 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
+// Given A, b, c, implements 0.5*(x^T)A(x) + b.x + c
+// Note, gradient is A(x) + b, and the hessian is A
 public class QuadraticFunction extends ConvexFunction {
     private final RealMatrix A;
     private final RealVector b;
