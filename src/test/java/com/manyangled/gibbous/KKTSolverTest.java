@@ -62,4 +62,16 @@ public class KKTSolverTest {
         double[] h = { 3.0 };
         testWithConstraints(new SchurKKTSolver(), H, A, g, h);
     }
+
+    @Test
+    public void testSchurConstrained2() {
+        double[][] H = { { 3.0, 2.0, 1.0 },
+                         { 2.0, 3.0, 2.0 },
+                         { 1.0, 2.0, 3.0 } };
+        double[][] A = { { 1.0, 2.0, 3.0 },
+                         { 6.0, 5.0, 4.0 } };
+        double[] g = { 1.0, 4.0, 9.0 };
+        double[] h = { 3.0, 7.0 };
+        testWithConstraints(new SchurKKTSolver(), H, A, g, h);
+    }
 }
