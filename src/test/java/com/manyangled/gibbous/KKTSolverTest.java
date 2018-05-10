@@ -22,11 +22,32 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
+import org.apache.commons.math3.linear.SingularValueDecomposition;
+
 import com.manyangled.gibbous.optim.convex.KKTSolver;
 import com.manyangled.gibbous.optim.convex.KKTSolution;
 import com.manyangled.gibbous.optim.convex.SchurKKTSolver;
 
 public class KKTSolverTest {
+    private double eps = 1e-9;
+
+    private RealMatrix inverse(RealMatrix A) {
+        SingularValueDecomposition svd = new SingularValueDecomposition(A);
+        return svd.getSolver().getInverse();
+    }
+
+    private void testNoConstraints(KKTSolver kkts, double[][] Hdata, double[] gdata) {
+        RealMatrix H = new Array2DRowRealMatrix(Hdata);
+        RealVector g = new ArrayRealVector(gdata);
+        KKTSolution sol = kkts.solve(H, g);
+        RealVector Hxv = H.operate(sol.xDelta);
+        RealVector target = g.mapMultiply(-1.0);
+        assertArrayEquals(target.toArray(), Hxv.toArray(), eps);
+        RealMatrix Hi = inverse(H);
+        double targetLambdaSq = Hi.operate(g).dotProduct(g);
+        assertEquals(targetLambdaSq, sol.lambdaSquared, eps);
+    }
+
     private void testWithConstraints(
         KKTSolver kkts,
         double[][] Hdata, double[][] Adata, double[] gdata, double[] hdata) {
@@ -51,7 +72,7 @@ public class KKTSolverTest {
         RealVector t = sol.xDelta.append(sol.nuPlus);
         RealVector Txt = T.operate(t);
         RealVector target = g.append(h).mapMultiply(-1.0);
-        assertArrayEquals(target.toArray(), Txt.toArray(), 1e-9);
+        assertArrayEquals(target.toArray(), Txt.toArray(), eps);
     }
 
     @Test
@@ -73,5 +94,21 @@ public class KKTSolverTest {
         double[] g = { 1.0, 4.0, 9.0 };
         double[] h = { 3.0, 7.0 };
         testWithConstraints(new SchurKKTSolver(), H, A, g, h);
+    }
+
+    @Test
+    public void testSchurUnconstrained1() {
+        double[][] H = { { 5.0, 1.0 }, { 1.0, 5.0 } };
+        double[] g = { 3.0, 7.0 };
+        testNoConstraints(new SchurKKTSolver(), H, g);
+    }
+
+    @Test
+    public void testSchurUnconstrained2() {
+        double[][] H = { { 7.0, 2.0, 1.0 },
+                         { 2.0, 7.0, 2.0 },
+                         { 1.0, 2.0, 7.0 } };
+        double[] g = { 9.0, 4.0, 1.0 };
+        testNoConstraints(new SchurKKTSolver(), H, g);
     }
 }
