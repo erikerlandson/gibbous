@@ -75,9 +75,33 @@ public class NewtonOptimizer extends ConvexOptimizer {
         final int n = convexObjective.dim();
         if ((eqConstraint == null) || (eqConstraint.b.getDimension() < 1)) {
             // constraints Ax = b are empty
-            return null;
+            // Algorithm 9.5: Newton's method (unconstrained)
+            RealVector x = xStart;
+            double v = convexObjective.value(x);
+            while (true) {
+                RealVector grad = convexObjective.gradient(x);
+                RealMatrix hess = convexObjective.hessian(x);
+                KKTSolution sol = kktSolver.solve(hess, grad);
+                if (sol.lambdaSquared <= (2.0 * epsilon)) break;
+                RealVector xDelta = sol.xDelta;
+                double t = 1.0;
+                double gdd = grad.dotProduct(xDelta);
+                while (true) {
+                    RealVector tx = x.add(xDelta.mapMultiply(t));
+                    double tv = convexObjective.value(tx);
+                    if (tv <= v + t*alpha*gdd) {
+                        x = tx;
+                        v = tv;
+                        break;
+                    }
+                    t = beta * t;
+                    if (t * alpha < epsilon) break;
+                }
+            }
+            return new PointValuePair(x.toArray(), v);
         } else {
             // constraints Ax = b are non-empty
+            // Algorithm 10.2: Newton's method with equality constraints
             final RealMatrix A = eqConstraint.A;
             final RealVector b = eqConstraint.b;
             final RealMatrix AT = A.transpose();
@@ -89,7 +113,8 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 double rNorm = residualNorm(x, nu, grad, A, AT, b);
                 if (rNorm <= epsilon) {
                     // For properly small epsilon, I believe that (rNorm <= epsilon)
-                    // also implies Ax = b to proper tolerance.
+                    // also implies Ax = b to proper tolerance, since the dual component of
+                    // the residual is Ax - b.
                     break;
                 }
                 RealMatrix hess = convexObjective.hessian(x);
@@ -108,6 +133,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
                         break;
                     }
                     t = beta * t;
+                    if (t * alpha < epsilon) break;
                 }
             }
             return new PointValuePair(x.toArray(), convexObjective.value(x));
