@@ -31,19 +31,10 @@ import com.manyangled.gibbous.optim.convex.NewtonOptimizer;
 import com.manyangled.gibbous.optim.convex.QuadraticFunction;
 import com.manyangled.gibbous.optim.convex.EqualityConstraint;
 
+import static com.manyangled.gibbous.COTestingUtils.translatedQF;
+import static com.manyangled.gibbous.COTestingUtils.eps;
+
 public class NewtonOptimizerTest {
-    private double eps = 1e-9;
-
-    private QuadraticFunction translatedQF(double h, double[] center) {
-        double[] all1 = new double[center.length];
-        java.util.Arrays.fill(all1, 1.0);
-        RealVector cv = new ArrayRealVector(center);
-        RealMatrix A = new DiagonalMatrix(all1);
-        RealVector b = cv.mapMultiply(-1.0);
-        double c = h + 0.5*cv.dotProduct(cv);
-        return new QuadraticFunction(A, b, c);
-    }
-
     @Test
     public void testSimpleQuadratic2D() {
         double[] center = { 0.0, 0.0 };

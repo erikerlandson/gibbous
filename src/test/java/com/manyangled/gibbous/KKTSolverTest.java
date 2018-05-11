@@ -28,9 +28,9 @@ import com.manyangled.gibbous.optim.convex.KKTSolver;
 import com.manyangled.gibbous.optim.convex.KKTSolution;
 import com.manyangled.gibbous.optim.convex.SchurKKTSolver;
 
-public class KKTSolverTest {
-    private double eps = 1e-9;
+import static com.manyangled.gibbous.COTestingUtils.eps;
 
+public class KKTSolverTest {
     private RealMatrix inverse(RealMatrix A) {
         SingularValueDecomposition svd = new SingularValueDecomposition(A);
         return svd.getSolver().getInverse();
