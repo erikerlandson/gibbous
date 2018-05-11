@@ -96,7 +96,6 @@ public class BarrierOptimizer extends ConvexOptimizer {
             return newton.optimize(args.toArray(odType));
         }
         RealVector x = xStart;
-        double v = convexObjective.value(x);
         for (double t = 1.0 ; (t * epsilon) <= m ; t *= mu) {
             ConvexFunction bf = new LogBarrierFunction(t, convexObjective, constraintFunctions);
             NewtonOptimizer newton = new NewtonOptimizer();
@@ -105,8 +104,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
             args.add(new InitialGuess(x.toArray()));
             PointValuePair pvp = newton.optimize(args.toArray(odType));
             x = new ArrayRealVector(pvp.getFirst());
-            v = pvp.getSecond();
         }
-        return new PointValuePair(x.toArray(), v);
+        return new PointValuePair(x.toArray(), convexObjective.value(x));
     }
 }
