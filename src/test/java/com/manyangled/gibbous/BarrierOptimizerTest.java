@@ -42,10 +42,31 @@ public class BarrierOptimizerTest {
         double h = 0.0;
         QuadraticFunction q = translatedQF(h, center);
         double[] ig = { 10.0, 10.0 };
-        double[][] A = { { -1.0, -1.0 } }; // equality constraint x + y > 1
+        double[][] A = { { -1.0, -1.0 } }; // constraint x + y > 1
         double[] b = { 1.0 };
         double[] xminTarget = { 0.5, 0.5 };
         double vminTarget = 0.25;
+        BarrierOptimizer barrier = new BarrierOptimizer();
+        PointValuePair pvp = barrier.optimize(
+            new ObjectiveFunction(q),
+            new InequalityConstraint(A, b),
+            new InitialGuess(ig));
+        double[] xmin = pvp.getFirst();
+        double vmin = pvp.getSecond();
+        assertArrayEquals(xminTarget, xmin, eps);
+        assertEquals(vminTarget, vmin, eps);
+    }
+
+    @Test
+    public void testTranslatedConstrained2D() {
+        double[] center = { 3.0, 3.0 };
+        double h = 7.0;
+        QuadraticFunction q = translatedQF(h, center);
+        double[] ig = { 10.0, 10.0 };
+        double[][] A = { { -1.0, -1.0 } }; // constraint x + y > 7
+        double[] b = { 7.0 };
+        double[] xminTarget = { 3.5, 3.5 };
+        double vminTarget = 7.25;
         BarrierOptimizer barrier = new BarrierOptimizer();
         PointValuePair pvp = barrier.optimize(
             new ObjectiveFunction(q),
