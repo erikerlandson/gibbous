@@ -29,6 +29,7 @@ import org.apache.commons.math3.optim.InitialGuess;
 
 import com.manyangled.gibbous.optim.convex.NewtonOptimizer;
 import com.manyangled.gibbous.optim.convex.QuadraticFunction;
+import com.manyangled.gibbous.optim.convex.EqualityConstraint;
 
 public class NewtonOptimizerTest {
     private double eps = 1e-9;
@@ -85,5 +86,85 @@ public class NewtonOptimizerTest {
         double vmin = pvp.getSecond();
         assertArrayEquals(center, xmin, eps);
         assertEquals(h, vmin, eps);        
+    }
+
+    @Test
+    public void testSimpleConstrained2D() {
+        double[] center = { 0.0, 0.0 };
+        double h = 0.0;
+        QuadraticFunction q = translatedQF(h, center);
+        double[] ig = { 10.0, 10.0 };
+        double[][] A = { { 1.0, 1.0 } }; // equality constraint x + y = 1
+        double[] b = { 1.0 };
+        double[] xminTarget = { 0.5, 0.5 };
+        double vminTarget = 0.25;
+        NewtonOptimizer nopt = new NewtonOptimizer();
+        PointValuePair pvp = nopt.optimize(
+            new ObjectiveFunction(q),
+            new EqualityConstraint(A, b),
+            new InitialGuess(ig));
+        double[] xmin = pvp.getFirst();
+        double vmin = pvp.getSecond();
+        assertArrayEquals(xminTarget, xmin, eps);
+        assertEquals(vminTarget, vmin, eps);
+    }
+
+    @Test
+    public void testTranslatedConstrained2D() {
+        double[] center = { 3.0, 3.0 };
+        double h = 7.0;
+        QuadraticFunction q = translatedQF(h, center);
+        double[] ig = { 10.0, 10.0 };
+        double[][] A = { { 1.0, 1.0 } }; // equality constraint x + y = 7
+        double[] b = { 7.0 };
+        double[] xminTarget = { 3.5, 3.5 };
+        double vminTarget = 7.25;
+        NewtonOptimizer nopt = new NewtonOptimizer();
+        PointValuePair pvp = nopt.optimize(
+            new ObjectiveFunction(q),
+            new EqualityConstraint(A, b),
+            new InitialGuess(ig));
+        double[] xmin = pvp.getFirst();
+        double vmin = pvp.getSecond();
+        assertArrayEquals(xminTarget, xmin, eps);
+        assertEquals(vminTarget, vmin, eps);
+    }
+
+    @Test
+    public void testSimpleConstrained3D() {
+        double[] center = { 0.0, 0.0, 0.0 };
+        double h = 0.0;
+        QuadraticFunction q = translatedQF(h, center);
+        double[][] A = { { 1.0, 1.0, 1.0 } }; // equality constraint x + y + z = 1
+        double[] b = { 1.0 };
+        double[] xminTarget = { 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0 };
+        double vminTarget = 1.0 / 6.0;
+        NewtonOptimizer nopt = new NewtonOptimizer();
+        PointValuePair pvp = nopt.optimize(
+            new ObjectiveFunction(q),
+            new EqualityConstraint(A, b));
+        double[] xmin = pvp.getFirst();
+        double vmin = pvp.getSecond();
+        assertArrayEquals(xminTarget, xmin, eps);
+        assertEquals(vminTarget, vmin, eps);
+    }
+
+    @Test
+    public void testTranslatedConstrained3D() {
+        double[] center = { 10.0, 10.0, 10.0 };
+        double h = -100.0;
+        QuadraticFunction q = translatedQF(h, center);
+        double[][] A = { { 1.0, 1.0, 1.0 } }; // equality constraint x + y + z = 31
+        double[] b = { 31.0 };
+        double[] xminTarget = { 10.0 + (1.0 / 3.0), 10.0 + (1.0 / 3.0), 10.0 + (1.0 / 3.0) };
+        double vminTarget = -100.0 + (1.0 / 6.0);
+        NewtonOptimizer nopt = new NewtonOptimizer();
+        PointValuePair pvp = nopt.optimize(
+            new ObjectiveFunction(q),
+            new EqualityConstraint(A, b));
+        double[] xmin = pvp.getFirst();
+        double vmin = pvp.getSecond();
+        assertArrayEquals(xminTarget, xmin, eps);
+        assertEquals(vminTarget, vmin, eps);
     }
 }
