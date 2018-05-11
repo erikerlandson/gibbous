@@ -13,7 +13,11 @@ limitations under the License.
 
 package com.manyangled.gibbous.optim.convex;
 
+import java.util.ArrayList;
+
 import org.apache.commons.math3.optim.OptimizationData;
+import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
+import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.PointValuePair;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.linear.RealMatrix;
@@ -22,10 +26,14 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 public class BarrierOptimizer extends ConvexOptimizer {
-    private OptimizationData[] optArgs;
+    private ArrayList<OptimizationData> newtonArgs = new ArrayList<OptimizationData>();
+    private InequalityConstraint ineqConstraint;
+    private ArrayList<ConvexFunction> constraintFunctions = new ArrayList<ConvexFunction>();
     private RealVector xStart;
     private double epsilon = 1e-10;
-
+    private double mu = 10.0;
+    private OptimizationData[] odType = new OptimizationData[0];
+    
     public BarrierOptimizer() {
         super();
     }
@@ -35,16 +43,26 @@ public class BarrierOptimizer extends ConvexOptimizer {
         return super.optimize(optData);
     }
 
+    private boolean canPassToNewton(OptimizationData data) {
+        if (data instanceof ObjectiveFunction) return false;
+        if (data instanceof InitialGuess) return false;
+        return true;
+    }
+    
     @Override
     protected void parseOptimizationData(OptimizationData... optData) {
         super.parseOptimizationData(optData);
         // save these for configuring newton optimizers
-        optArgs = new OptimizationData[optData.length];
-        int j = 0;
         for (OptimizationData data: optData) {
-            optArgs[j++] = data;
+            if (canPassToNewton(data)) {
+                newtonArgs.add(data);
+            }
             if (data instanceof Epsilon) {
                 epsilon = ((Epsilon)data).epsilon;
+                continue;
+            }
+            if (data instanceof InequalityConstraint) {
+                ineqConstraint = (InequalityConstraint)data;
                 continue;
             }
         }
@@ -57,10 +75,38 @@ public class BarrierOptimizer extends ConvexOptimizer {
         } else {
             xStart = new ArrayRealVector(n, 0.0);
         }
+        if (ineqConstraint != null) {
+            RealMatrix A = ineqConstraint.A;
+            RealVector b = ineqConstraint.b;
+            for (int k = 0; k < b.getDimension(); ++k) {
+                constraintFunctions.add(new LinearFunction(A.getRowVector(k), b.getEntry(k)));
+            }
+        }
     }
 
     @Override
     public PointValuePair doOptimize() {
-        return null;
+        double m = (double)((constraintFunctions != null) ? constraintFunctions.size() : 0);
+        if (m == 0.0) {
+            // if there are no inequality constraints, invoke newton's method directly
+            ArrayList<OptimizationData> args = (ArrayList<OptimizationData>)newtonArgs.clone();
+            args.add(new ObjectiveFunction(convexObjective));
+            args.add(new InitialGuess(xStart.toArray()));
+            NewtonOptimizer newton = new NewtonOptimizer();
+            return newton.optimize(args.toArray(odType));
+        }
+        RealVector x = xStart;
+        double v = convexObjective.value(x);
+        for (double t = 1.0 ; (t * epsilon) <= m ; t *= mu) {
+            ConvexFunction bf = new LogBarrierFunction(t, convexObjective, constraintFunctions);
+            NewtonOptimizer newton = new NewtonOptimizer();
+            ArrayList<OptimizationData> args = (ArrayList<OptimizationData>)newtonArgs.clone();
+            args.add(new ObjectiveFunction(bf));
+            args.add(new InitialGuess(x.toArray()));
+            PointValuePair pvp = newton.optimize(args.toArray(odType));
+            x = new ArrayRealVector(pvp.getFirst());
+            v = pvp.getSecond();
+        }
+        return new PointValuePair(x.toArray(), v);
     }
 }
