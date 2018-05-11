@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.Arrays;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
 public class LogBarrierFunction extends ConvexFunction {
@@ -73,7 +75,7 @@ public class LogBarrierFunction extends ConvexFunction {
 
     @Override
     public RealVector gradient(final RealVector x) {
-        RealVector g = f0.gradient(x);
+        RealVector g = new ArrayRealVector(f0.gradient(x).toArray());
         g.mapMultiplyToSelf(t);
         for (ConvexFunction fi: f) {
             double zi = -1.0 / fi.value(x);
@@ -84,7 +86,7 @@ public class LogBarrierFunction extends ConvexFunction {
 
     @Override
     public RealMatrix hessian(final RealVector x) {
-        RealMatrix h = f0.hessian(x).scalarMultiply(t);
+        RealMatrix h = new Array2DRowRealMatrix(f0.hessian(x).scalarMultiply(t).getData());
         for (ConvexFunction fi: f) {
             double vi = fi.value(x);
             RealVector gi = fi.gradient(x);
