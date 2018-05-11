@@ -100,6 +100,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, grad);
                 if (sol.lambdaSquared <= (2.0 * epsilon)) break;
                 RealVector xDelta = sol.xDelta;
+                if (xDelta.getNorm() < epsilon) break;
                 double gdd = grad.dotProduct(xDelta);
                 for (double t = 1.0 ; ; t *= beta) {
                     RealVector tx = x.add(xDelta.mapMultiply(t));
@@ -143,6 +144,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, A, AT, grad, A.operate(x).subtract(b));
                 RealVector xDelta = sol.xDelta;
                 RealVector nuDelta = sol.nuPlus.subtract(nu);
+                if ((xDelta.getNorm() + nuDelta.getNorm()) < epsilon) break;
                 for (double t = 1.0 ; ; t *= beta) {
                     RealVector tx = x.add(xDelta.mapMultiply(t));
                     double tv = convexObjective.value(tx);
