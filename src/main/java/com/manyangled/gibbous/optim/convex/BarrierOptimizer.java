@@ -22,8 +22,7 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 public class BarrierOptimizer extends ConvexOptimizer {
-    private EqualityConstraint eqConstraint;
-    private KKTSolver kktSolver = new SchurKKTSolver();
+    private OptimizationData[] optArgs;
     private RealVector xStart;
     private double epsilon = 1e-10;
 
@@ -39,15 +38,11 @@ public class BarrierOptimizer extends ConvexOptimizer {
     @Override
     protected void parseOptimizationData(OptimizationData... optData) {
         super.parseOptimizationData(optData);
+        // save these for configuring newton optimizers
+        optArgs = new OptimizationData[optData.length];
+        int j = 0;
         for (OptimizationData data: optData) {
-            if (data instanceof EqualityConstraint) {
-                eqConstraint = (EqualityConstraint)data;
-                continue;
-            }
-            if (data instanceof KKTSolver) {
-                kktSolver = (KKTSolver)data;
-                continue;
-            }
+            optArgs[j++] = data;
             if (data instanceof Epsilon) {
                 epsilon = ((Epsilon)data).epsilon;
                 continue;
@@ -61,7 +56,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
                 throw new DimensionMismatchException(xStart.getDimension(), n);
         } else {
             xStart = new ArrayRealVector(n, 0.0);
-        }        
+        }
     }
 
     @Override
