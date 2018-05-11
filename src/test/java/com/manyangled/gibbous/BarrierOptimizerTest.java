@@ -98,16 +98,16 @@ public class BarrierOptimizerTest {
         assertArrayEquals(xminTarget, xmin, eps);
         assertEquals(vminTarget, vmin, eps);
     }
-/*
+
     @Test
     public void testTranslatedConstrained3D() {
-        double[] center = { 2.0, 2.0, 2.0 };
-        double h = 1.0;
+        double[] center = { 10.0, 10.0, 10.0 };
+        double h = 10.0;
         QuadraticFunction q = translatedQF(h, center);
-        double[] ig = { 11.0, 11.0, 11.0 };
-        double[][] A = { { -1.0, -1.0, -1.0 } }; // constraint x + y + z > 7
-        double[] b = { 7.0 };
-        double[] xminTarget = { 2.0 + (1.0 / 3.0), 2.0 + (1.0 / 3.0), 2.0 + (1.0 / 3.0) };
+        double[] ig = { 15.0, 15.0, 15.0 };
+        double[][] A = { { -1.0, -1.0, -1.0 } }; // constraint x + y + z > 31
+        double[] b = { 31.0 };
+        double[] xminTarget = { 10.0 + (1.0 / 3.0), 10.0 + (1.0 / 3.0), 10.0 + (1.0 / 3.0) };
         double vminTarget = h + (1.0 / 6.0);
         BarrierOptimizer barrier = new BarrierOptimizer();
         PointValuePair pvp = barrier.optimize(
@@ -119,5 +119,5 @@ public class BarrierOptimizerTest {
         assertArrayEquals(xminTarget, xmin, eps);
         assertEquals(vminTarget, vmin, eps);
     }
-*/
+
 }
