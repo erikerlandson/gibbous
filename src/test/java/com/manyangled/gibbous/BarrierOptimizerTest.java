@@ -77,4 +77,47 @@ public class BarrierOptimizerTest {
         assertArrayEquals(xminTarget, xmin, eps);
         assertEquals(vminTarget, vmin, eps);
     }
+
+    @Test
+    public void testSimpleConstrained3D() {
+        double[] center = { 0.0, 0.0, 0.0 };
+        double h = 0.0;
+        QuadraticFunction q = translatedQF(h, center);
+        double[] ig = { 2.0, 2.0, 2.0 };
+        double[][] A = { { -1.0, -1.0, -1.0 } }; // constraint x + y + z > 1
+        double[] b = { 1.0 };
+        double[] xminTarget = { 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0 };
+        double vminTarget = 1.0 / 6.0;
+        BarrierOptimizer barrier = new BarrierOptimizer();
+        PointValuePair pvp = barrier.optimize(
+            new ObjectiveFunction(q),
+            new InequalityConstraint(A, b),
+            new InitialGuess(ig));
+        double[] xmin = pvp.getFirst();
+        double vmin = pvp.getSecond();
+        assertArrayEquals(xminTarget, xmin, eps);
+        assertEquals(vminTarget, vmin, eps);
+    }
+/*
+    @Test
+    public void testTranslatedConstrained3D() {
+        double[] center = { 2.0, 2.0, 2.0 };
+        double h = 1.0;
+        QuadraticFunction q = translatedQF(h, center);
+        double[] ig = { 11.0, 11.0, 11.0 };
+        double[][] A = { { -1.0, -1.0, -1.0 } }; // constraint x + y + z > 7
+        double[] b = { 7.0 };
+        double[] xminTarget = { 2.0 + (1.0 / 3.0), 2.0 + (1.0 / 3.0), 2.0 + (1.0 / 3.0) };
+        double vminTarget = h + (1.0 / 6.0);
+        BarrierOptimizer barrier = new BarrierOptimizer();
+        PointValuePair pvp = barrier.optimize(
+            new ObjectiveFunction(q),
+            new InequalityConstraint(A, b),
+            new InitialGuess(ig));
+        double[] xmin = pvp.getFirst();
+        double vmin = pvp.getSecond();
+        assertArrayEquals(xminTarget, xmin, eps);
+        assertEquals(vminTarget, vmin, eps);
+    }
+*/
 }
