@@ -20,7 +20,7 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
-public abstract class ConvexFunction implements MultivariateFunction {
+public abstract class TwiceDifferentiableFunction implements MultivariateFunction {
     public abstract int dim();
 
     public abstract double value(final RealVector x);

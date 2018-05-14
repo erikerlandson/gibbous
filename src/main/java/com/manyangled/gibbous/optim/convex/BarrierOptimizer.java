@@ -28,7 +28,7 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 public class BarrierOptimizer extends ConvexOptimizer {
     private ArrayList<OptimizationData> newtonArgs = new ArrayList<OptimizationData>();
     private LinearInequalityConstraint ineqConstraint;
-    private ArrayList<ConvexFunction> constraintFunctions = new ArrayList<ConvexFunction>();
+    private ArrayList<TwiceDifferentiableFunction> constraintFunctions = new ArrayList<TwiceDifferentiableFunction>();
     private RealVector xStart;
     private double epsilon = 1e-10;
     private double mu = 10.0;
@@ -97,7 +97,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
         }
         RealVector x = xStart;
         for (double t = 1.0 ; (t * epsilon) <= m ; t *= mu) {
-            ConvexFunction bf = new LogBarrierFunction(t, convexObjective, constraintFunctions);
+            TwiceDifferentiableFunction bf = new LogBarrierFunction(t, convexObjective, constraintFunctions);
             NewtonOptimizer newton = new NewtonOptimizer();
             ArrayList<OptimizationData> args = (ArrayList<OptimizationData>)newtonArgs.clone();
             args.add(new ObjectiveFunction(bf));

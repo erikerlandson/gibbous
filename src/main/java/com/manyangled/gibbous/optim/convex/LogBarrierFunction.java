@@ -23,33 +23,33 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
-public class LogBarrierFunction extends ConvexFunction {
+public class LogBarrierFunction extends TwiceDifferentiableFunction {
 
     private final double t;
-    private final ConvexFunction f0;
-    private final ConvexFunction[] f;
+    private final TwiceDifferentiableFunction f0;
+    private final TwiceDifferentiableFunction[] f;
     private final int n;
 
-    public LogBarrierFunction(double t, ConvexFunction f0, ConvexFunction[] f) {
+    public LogBarrierFunction(double t, TwiceDifferentiableFunction f0, TwiceDifferentiableFunction[] f) {
         this.t = t;
         this.f0 = f0;
         this.n = f0.dim();
         this.f = f;
-        for (ConvexFunction fi: f) {
+        for (TwiceDifferentiableFunction fi: f) {
             if (fi.dim() != n) throw new DimensionMismatchException(fi.dim(), n);
         }
     }
 
-    public LogBarrierFunction(double t, ConvexFunction f0, Collection<ConvexFunction> cf) {
+    public LogBarrierFunction(double t, TwiceDifferentiableFunction f0, Collection<TwiceDifferentiableFunction> cf) {
         this.t = t;
         this.f0 = f0;
         this.n = f0.dim();
         int m = cf.size();
-        f = new ConvexFunction[m];
+        f = new TwiceDifferentiableFunction[m];
         Iterator e = cf.iterator();
         int j = 0;
         while (e.hasNext()) {
-            f[j] = (ConvexFunction)(e.next());
+            f[j] = (TwiceDifferentiableFunction)(e.next());
             if (f[j].dim() != n) throw new DimensionMismatchException(f[j].dim(), n);
             j += 1;
         }
@@ -63,7 +63,7 @@ public class LogBarrierFunction extends ConvexFunction {
     @Override
     public double value(final RealVector x) {
         double v = t * f0.value(x);
-        for (ConvexFunction fi: f) {
+        for (TwiceDifferentiableFunction fi: f) {
             double ti = fi.value(x);
             if (ti >= 0.0) {
                 return Double.POSITIVE_INFINITY;
@@ -77,7 +77,7 @@ public class LogBarrierFunction extends ConvexFunction {
     public RealVector gradient(final RealVector x) {
         RealVector g = new ArrayRealVector(f0.gradient(x).toArray());
         g.mapMultiplyToSelf(t);
-        for (ConvexFunction fi: f) {
+        for (TwiceDifferentiableFunction fi: f) {
             double zi = -1.0 / fi.value(x);
             g.combineToSelf(1.0, zi, fi.gradient(x));
         }
@@ -87,7 +87,7 @@ public class LogBarrierFunction extends ConvexFunction {
     @Override
     public RealMatrix hessian(final RealVector x) {
         RealMatrix h = new Array2DRowRealMatrix(f0.hessian(x).scalarMultiply(t).getData());
-        for (ConvexFunction fi: f) {
+        for (TwiceDifferentiableFunction fi: f) {
             double vi = fi.value(x);
             RealVector gi = fi.gradient(x);
             RealMatrix hi = fi.hessian(x);

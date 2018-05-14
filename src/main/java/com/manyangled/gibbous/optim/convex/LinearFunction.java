@@ -18,7 +18,7 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
-public class LinearFunction extends ConvexFunction {
+public class LinearFunction extends TwiceDifferentiableFunction {
     private final RealVector b;
     private final double c;
     private final int n;

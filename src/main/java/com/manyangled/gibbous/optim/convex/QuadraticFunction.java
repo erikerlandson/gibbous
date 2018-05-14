@@ -26,7 +26,7 @@ import org.apache.commons.math3.exception.DimensionMismatchException;
 
 // Given A, b, c, implements 0.5*(x^T)A(x) + b.x + c
 // Note, gradient is A(x) + b, and the hessian is A
-public class QuadraticFunction extends ConvexFunction {
+public class QuadraticFunction extends TwiceDifferentiableFunction {
     private final RealMatrix A;
     private final RealVector b;
     private final double c;

@@ -20,7 +20,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 
 public abstract class ConvexOptimizer extends MultivariateOptimizer {
-    protected ConvexFunction convexObjective;
+    protected TwiceDifferentiableFunction convexObjective;
 
     protected ConvexOptimizer() {
         super(null);
@@ -32,16 +32,16 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         for (OptimizationData data: optData) {
             if (data instanceof ObjectiveFunction) {
                 MultivariateFunction f = ((ObjectiveFunction)data).getObjectiveFunction();
-                if (f instanceof ConvexFunction) {
-                  convexObjective = (ConvexFunction)f;
+                if (f instanceof TwiceDifferentiableFunction) {
+                  convexObjective = (TwiceDifferentiableFunction)f;
                 } else {
-                    throw new IllegalArgumentException("ConvexFunction objective required");
+                    throw new IllegalArgumentException("TwiceDifferentiableFunction objective required");
                 }
                 continue;
             }
         }
         if (convexObjective == null)
-            throw new IllegalStateException("Expected a ConvexFunction argument");
+            throw new IllegalStateException("Expected a TwiceDifferentiableFunction argument");
     }
 
     @Override
