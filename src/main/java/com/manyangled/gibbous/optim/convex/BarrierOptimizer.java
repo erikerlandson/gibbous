@@ -57,8 +57,8 @@ public class BarrierOptimizer extends ConvexOptimizer {
             if (canPassToNewton(data)) {
                 newtonArgs.add(data);
             }
-            if (data instanceof Epsilon) {
-                epsilon = ((Epsilon)data).epsilon;
+            if (data instanceof ConvergenceEpsilon) {
+                epsilon = ((ConvergenceEpsilon)data).epsilon;
                 continue;
             }
             if (data instanceof LinearInequalityConstraint) {

@@ -52,8 +52,8 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 kktSolver = (KKTSolver)data;
                 continue;
             }
-            if (data instanceof Epsilon) {
-                epsilon = ((Epsilon)data).epsilon;
+            if (data instanceof ConvergenceEpsilon) {
+                epsilon = ((ConvergenceEpsilon)data).epsilon;
                 continue;
             }
             if (data instanceof BacktrackAlpha) {
