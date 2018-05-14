@@ -56,8 +56,8 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 epsilon = ((Epsilon)data).epsilon;
                 continue;
             }
-            if (data instanceof Alpha) {
-                alpha = ((Alpha)data).alpha;
+            if (data instanceof BacktrackAlpha) {
+                alpha = ((BacktrackAlpha)data).alpha;
                 continue;
             }
             if (data instanceof Beta) {
