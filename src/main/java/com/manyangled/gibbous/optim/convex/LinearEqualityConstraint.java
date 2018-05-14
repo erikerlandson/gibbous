@@ -20,11 +20,12 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
-public class EqualityConstraint implements OptimizationData {
+// Represents a set of linear equality constraints given as Ax = b
+public class LinearEqualityConstraint implements OptimizationData {
     public final RealMatrix A;
     public final RealVector b;
 
-    public EqualityConstraint(final RealMatrix A, final RealVector b) {
+    public LinearEqualityConstraint(final RealMatrix A, final RealVector b) {
         int k = A.getRowDimension();
         if (b.getDimension() != k)
             throw new DimensionMismatchException(b.getDimension(), k);
@@ -32,7 +33,7 @@ public class EqualityConstraint implements OptimizationData {
         this.b = b;
     }
 
-    public EqualityConstraint(final double[][] A, final double[] b) {
+    public LinearEqualityConstraint(final double[][] A, final double[] b) {
         this(new Array2DRowRealMatrix(A), new ArrayRealVector(b));
     }
 }

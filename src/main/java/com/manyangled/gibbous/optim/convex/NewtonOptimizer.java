@@ -24,7 +24,7 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 
 // Algorithm 10.2
 public class NewtonOptimizer extends ConvexOptimizer {
-    private EqualityConstraint eqConstraint;
+    private LinearEqualityConstraint eqConstraint;
     private KKTSolver kktSolver = new SchurKKTSolver();
     private RealVector xStart;
     private double epsilon = 1e-10;
@@ -44,8 +44,8 @@ public class NewtonOptimizer extends ConvexOptimizer {
     protected void parseOptimizationData(OptimizationData... optData) {
         super.parseOptimizationData(optData);
         for (OptimizationData data: optData) {
-            if (data instanceof EqualityConstraint) {
-                eqConstraint = (EqualityConstraint)data;
+            if (data instanceof LinearEqualityConstraint) {
+                eqConstraint = (LinearEqualityConstraint)data;
                 continue;
             }
             if (data instanceof KKTSolver) {

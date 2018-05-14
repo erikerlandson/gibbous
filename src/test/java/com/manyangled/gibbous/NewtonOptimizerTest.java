@@ -29,7 +29,7 @@ import org.apache.commons.math3.optim.InitialGuess;
 
 import com.manyangled.gibbous.optim.convex.NewtonOptimizer;
 import com.manyangled.gibbous.optim.convex.QuadraticFunction;
-import com.manyangled.gibbous.optim.convex.EqualityConstraint;
+import com.manyangled.gibbous.optim.convex.LinearEqualityConstraint;
 
 import static com.manyangled.gibbous.COTestingUtils.translatedQF;
 import static com.manyangled.gibbous.COTestingUtils.eps;
@@ -92,7 +92,7 @@ public class NewtonOptimizerTest {
         NewtonOptimizer nopt = new NewtonOptimizer();
         PointValuePair pvp = nopt.optimize(
             new ObjectiveFunction(q),
-            new EqualityConstraint(A, b),
+            new LinearEqualityConstraint(A, b),
             new InitialGuess(ig));
         double[] xmin = pvp.getFirst();
         double vmin = pvp.getSecond();
@@ -113,7 +113,7 @@ public class NewtonOptimizerTest {
         NewtonOptimizer nopt = new NewtonOptimizer();
         PointValuePair pvp = nopt.optimize(
             new ObjectiveFunction(q),
-            new EqualityConstraint(A, b),
+            new LinearEqualityConstraint(A, b),
             new InitialGuess(ig));
         double[] xmin = pvp.getFirst();
         double vmin = pvp.getSecond();
@@ -133,7 +133,7 @@ public class NewtonOptimizerTest {
         NewtonOptimizer nopt = new NewtonOptimizer();
         PointValuePair pvp = nopt.optimize(
             new ObjectiveFunction(q),
-            new EqualityConstraint(A, b));
+            new LinearEqualityConstraint(A, b));
         double[] xmin = pvp.getFirst();
         double vmin = pvp.getSecond();
         assertArrayEquals(xminTarget, xmin, eps);
@@ -152,7 +152,7 @@ public class NewtonOptimizerTest {
         NewtonOptimizer nopt = new NewtonOptimizer();
         PointValuePair pvp = nopt.optimize(
             new ObjectiveFunction(q),
-            new EqualityConstraint(A, b));
+            new LinearEqualityConstraint(A, b));
         double[] xmin = pvp.getFirst();
         double vmin = pvp.getSecond();
         assertArrayEquals(xminTarget, xmin, eps);
