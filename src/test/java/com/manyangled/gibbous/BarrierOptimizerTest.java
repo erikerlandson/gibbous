@@ -29,8 +29,7 @@ import org.apache.commons.math3.optim.InitialGuess;
 
 import com.manyangled.gibbous.optim.convex.BarrierOptimizer;
 import com.manyangled.gibbous.optim.convex.QuadraticFunction;
-import com.manyangled.gibbous.optim.convex.EqualityConstraint;
-import com.manyangled.gibbous.optim.convex.InequalityConstraint;
+import com.manyangled.gibbous.optim.convex.LinearInequalityConstraint;
 
 import static com.manyangled.gibbous.COTestingUtils.translatedQF;
 import static com.manyangled.gibbous.COTestingUtils.eps;
@@ -49,7 +48,7 @@ public class BarrierOptimizerTest {
         BarrierOptimizer barrier = new BarrierOptimizer();
         PointValuePair pvp = barrier.optimize(
             new ObjectiveFunction(q),
-            new InequalityConstraint(A, b),
+            new LinearInequalityConstraint(A, b),
             new InitialGuess(ig));
         double[] xmin = pvp.getFirst();
         double vmin = pvp.getSecond();
@@ -70,7 +69,7 @@ public class BarrierOptimizerTest {
         BarrierOptimizer barrier = new BarrierOptimizer();
         PointValuePair pvp = barrier.optimize(
             new ObjectiveFunction(q),
-            new InequalityConstraint(A, b),
+            new LinearInequalityConstraint(A, b),
             new InitialGuess(ig));
         double[] xmin = pvp.getFirst();
         double vmin = pvp.getSecond();
@@ -91,7 +90,7 @@ public class BarrierOptimizerTest {
         BarrierOptimizer barrier = new BarrierOptimizer();
         PointValuePair pvp = barrier.optimize(
             new ObjectiveFunction(q),
-            new InequalityConstraint(A, b),
+            new LinearInequalityConstraint(A, b),
             new InitialGuess(ig));
         double[] xmin = pvp.getFirst();
         double vmin = pvp.getSecond();
@@ -112,7 +111,7 @@ public class BarrierOptimizerTest {
         BarrierOptimizer barrier = new BarrierOptimizer();
         PointValuePair pvp = barrier.optimize(
             new ObjectiveFunction(q),
-            new InequalityConstraint(A, b),
+            new LinearInequalityConstraint(A, b),
             new InitialGuess(ig));
         double[] xmin = pvp.getFirst();
         double vmin = pvp.getSecond();

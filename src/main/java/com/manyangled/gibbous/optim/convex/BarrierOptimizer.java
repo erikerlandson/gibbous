@@ -27,7 +27,7 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 
 public class BarrierOptimizer extends ConvexOptimizer {
     private ArrayList<OptimizationData> newtonArgs = new ArrayList<OptimizationData>();
-    private InequalityConstraint ineqConstraint;
+    private LinearInequalityConstraint ineqConstraint;
     private ArrayList<ConvexFunction> constraintFunctions = new ArrayList<ConvexFunction>();
     private RealVector xStart;
     private double epsilon = 1e-10;
@@ -61,8 +61,8 @@ public class BarrierOptimizer extends ConvexOptimizer {
                 epsilon = ((Epsilon)data).epsilon;
                 continue;
             }
-            if (data instanceof InequalityConstraint) {
-                ineqConstraint = (InequalityConstraint)data;
+            if (data instanceof LinearInequalityConstraint) {
+                ineqConstraint = (LinearInequalityConstraint)data;
                 continue;
             }
         }

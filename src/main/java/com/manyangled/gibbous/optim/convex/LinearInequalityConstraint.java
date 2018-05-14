@@ -20,11 +20,11 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
-public class InequalityConstraint implements OptimizationData {
+public class LinearInequalityConstraint implements OptimizationData {
     public final RealMatrix A;
     public final RealVector b;
 
-    public InequalityConstraint(final RealMatrix A, final RealVector b) {
+    public LinearInequalityConstraint(final RealMatrix A, final RealVector b) {
         int k = A.getRowDimension();
         if (b.getDimension() != k)
             throw new DimensionMismatchException(b.getDimension(), k);
@@ -32,7 +32,7 @@ public class InequalityConstraint implements OptimizationData {
         this.b = b;
     }
 
-    public InequalityConstraint(final double[][] A, final double[] b) {
+    public LinearInequalityConstraint(final double[][] A, final double[] b) {
         this(new Array2DRowRealMatrix(A), new ArrayRealVector(b));
     }
 }
