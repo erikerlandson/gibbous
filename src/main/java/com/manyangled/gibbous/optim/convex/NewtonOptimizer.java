@@ -60,8 +60,8 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 alpha = ((BacktrackAlpha)data).alpha;
                 continue;
             }
-            if (data instanceof Beta) {
-                beta = ((Beta)data).beta;
+            if (data instanceof BacktrackBeta) {
+                beta = ((BacktrackBeta)data).beta;
                 continue;
             }
         }
