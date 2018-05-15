@@ -13,6 +13,7 @@ limitations under the License.
 
 package com.manyangled.gibbous.optim.convex;
 
+import org.apache.commons.math3.util.Pair;
 import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.optim.PointValuePair;
 import org.apache.commons.math3.exception.DimensionMismatchException;
@@ -30,6 +31,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
     private double epsilon = 1e-10;
     private double alpha = 0.25;
     private double beta = 0.5;
+    private HaltingCondition halting;
 
     public NewtonOptimizer() {
         super();
@@ -62,6 +64,10 @@ public class NewtonOptimizer extends ConvexOptimizer {
             }
             if (data instanceof BacktrackBeta) {
                 beta = ((BacktrackBeta)data).beta;
+                continue;
+            }
+            if (data instanceof HaltingCondition) {
+                halting = (HaltingCondition)data;
                 continue;
             }
         }
@@ -116,6 +122,14 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 }
                 // If there was no forward step to make, that indicates minimum
                 if (!foundStep) break;
+                // If we have both current and next, optionally check halting condition
+                if ((halting != null) && halting.checker.converged(
+                        getIterations(),
+                        new Pair<RealVector, Double>(x, v),
+                        new Pair<RealVector, Double>(tx, tv))) {
+                    break;
+                }
+                // update and proceed to next iteration
                 x = tx;
                 v = tv;
             }
@@ -159,6 +173,14 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 }
                 // If there was no forward step to make, that indicates minimum
                 if (!foundStep) break;
+                // If we have both current and next, optionally check halting condition
+                if ((halting != null) && halting.checker.converged(
+                        getIterations(),
+                        new Pair<RealVector, Double>(x, v),
+                        new Pair<RealVector, Double>(tx, tv))) {
+                    break;
+                }
+                // update and proceed to next iteration
                 x = tx;
                 nu = tnu;
                 v = tv;

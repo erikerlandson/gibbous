@@ -15,6 +15,7 @@ package com.manyangled.gibbous.optim.convex;
 
 import java.util.ArrayList;
 
+import org.apache.commons.math3.util.Pair;
 import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.InitialGuess;
@@ -33,6 +34,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
     private double epsilon = 1e-10;
     private double mu = 10.0;
     private OptimizationData[] odType = new OptimizationData[0];
+    private HaltingCondition halting;
     
     public BarrierOptimizer() {
         super();
@@ -46,6 +48,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
     private boolean canPassToNewton(OptimizationData data) {
         if (data instanceof ObjectiveFunction) return false;
         if (data instanceof InitialGuess) return false;
+        if (data instanceof HaltingCondition) return false;
         return true;
     }
     
@@ -63,6 +66,10 @@ public class BarrierOptimizer extends ConvexOptimizer {
             }
             if (data instanceof LinearInequalityConstraint) {
                 ineqConstraint = (LinearInequalityConstraint)data;
+                continue;
+            }
+            if (data instanceof HaltingCondition) {
+                halting = (HaltingCondition)data;
                 continue;
             }
         }
@@ -103,7 +110,15 @@ public class BarrierOptimizer extends ConvexOptimizer {
             args.add(new ObjectiveFunction(bf));
             args.add(new InitialGuess(x.toArray()));
             PointValuePair pvp = newton.optimize(args.toArray(odType));
-            x = new ArrayRealVector(pvp.getFirst());
+            RealVector tx = new ArrayRealVector(pvp.getFirst());
+            if ((halting != null) && halting.checker.converged(
+                    getIterations(),
+                    new Pair<RealVector, Double>(x, convexObjective.value(x)),
+                    new Pair<RealVector, Double>(tx, convexObjective.value(tx)))) {
+                break;
+            }
+            // update and proceed to next iteration
+            x = tx;
         }
         return new PointValuePair(x.toArray(), convexObjective.value(x));
     }
