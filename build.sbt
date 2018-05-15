@@ -2,7 +2,7 @@ name := "gibbous"
 
 organization := "com.manyangled"
 
-version := "0.1.0"
+version := "0.1.0-local-916c3849"
 
 scalaVersion := "2.11.8"
 
@@ -15,7 +15,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-math3" % "3.6.1",
-  "com.manyangled" %% "gnuplot4s" % "0.1.0-local-deedf561" % Test,
+  //"com.manyangled" %% "gnuplot4s" % "0.1.0-local-deedf561" % Test,
   "com.novocode" % "junit-interface" % "0.11" % Test
   //"org.scalatest" %% "scalatest" % "3.0.5" % Test
 )

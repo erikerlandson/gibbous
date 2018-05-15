@@ -92,7 +92,6 @@ public class NewtonOptimizer extends ConvexOptimizer {
             // Algorithm 9.5: Newton's method (unconstrained)
             RealVector x = xStart;
             double v = convexObjective.value(x);
-            boolean noStep = false;
             while (true) {
                 incrementIterationCount();
                 RealVector grad = convexObjective.gradient(x);
@@ -100,23 +99,25 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, grad);
                 if (sol.lambdaSquared <= (2.0 * epsilon)) break;
                 RealVector xDelta = sol.xDelta;
+                // If the step direction becomes very small that indicates minimum
                 if (xDelta.getNorm() < epsilon) break;
                 double gdd = grad.dotProduct(xDelta);
-                for (double t = 1.0 ; ; t *= beta) {
-                    RealVector tx = x.add(xDelta.mapMultiply(t));
-                    double tv = convexObjective.value(tx);
+                RealVector tx = null;
+                double tv = 0.0;
+                boolean foundStep = false;
+                for (double t = 1.0 ; t >= epsilon ; t *= beta) {
+                    tx = x.add(xDelta.mapMultiply(t));
+                    tv = convexObjective.value(tx);
                     if (tv == Double.POSITIVE_INFINITY) continue;
                     if (tv <= v + t*alpha*gdd) {
-                        x = tx;
-                        v = tv;
-                        break;
-                    }
-                    if (t < epsilon) {
-                        noStep = true;
+                        foundStep = true;
                         break;
                     }
                 }
-                if (noStep) break;
+                // If there was no forward step to make, that indicates minimum
+                if (!foundStep) break;
+                x = tx;
+                v = tv;
             }
             return new PointValuePair(x.toArray(), v);
         } else {
@@ -129,41 +130,38 @@ public class NewtonOptimizer extends ConvexOptimizer {
             RealVector x = xStart;
             RealVector nu = new ArrayRealVector(nDual, 0.0);
             double v = convexObjective.value(x);
-            boolean noStep = false;
             while (true) {
                 incrementIterationCount();
                 RealVector grad = convexObjective.gradient(x);
                 double rNorm = residualNorm(x, nu, grad, A, AT, b);
-                if (rNorm <= epsilon) {
-                    // For properly small epsilon, I believe that (rNorm <= epsilon)
-                    // also implies Ax = b to proper tolerance, since the dual component of
-                    // the residual is Ax - b.
-                    break;
-                }
+                if (rNorm <= epsilon) break;
                 RealMatrix hess = convexObjective.hessian(x);
                 KKTSolution sol = kktSolver.solve(hess, A, AT, grad, A.operate(x).subtract(b));
                 RealVector xDelta = sol.xDelta;
                 RealVector nuDelta = sol.nuPlus.subtract(nu);
+                // If step direction delta becomes sufficiently small it indicates minimum
                 if ((xDelta.getNorm() + nuDelta.getNorm()) < epsilon) break;
-                for (double t = 1.0 ; ; t *= beta) {
-                    RealVector tx = x.add(xDelta.mapMultiply(t));
-                    double tv = convexObjective.value(tx);
+                RealVector tx = null;
+                RealVector tnu = null;
+                double tv = 0.0;
+                boolean foundStep = false;
+                for (double t = 1.0 ; t >= epsilon ; t *= beta) {
+                    tx = x.add(xDelta.mapMultiply(t));
+                    tv = convexObjective.value(tx);
                     if (tv == Double.POSITIVE_INFINITY) continue;
-                    RealVector tnu = nu.add(nuDelta.mapMultiply(t));
+                    tnu = nu.add(nuDelta.mapMultiply(t));
                     RealVector tgrad = convexObjective.gradient(tx);
                     double tNorm = residualNorm(tx, tnu, tgrad, A, AT, b);
                     if (tNorm <= (1.0 - alpha*t)*rNorm) {
-                        x = tx;
-                        nu = tnu;
-                        v = tv;
-                        break;
-                    }
-                    if (t < epsilon) {
-                        noStep = true;
+                        foundStep = true;
                         break;
                     }
                 }
-                if (noStep) break;
+                // If there was no forward step to make, that indicates minimum
+                if (!foundStep) break;
+                x = tx;
+                nu = tnu;
+                v = tv;
             }
             return new PointValuePair(x.toArray(), v);
         }
