@@ -27,7 +27,6 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 public class BarrierOptimizer extends ConvexOptimizer {
-    private ArrayList<OptimizationData> newtonArgs = new ArrayList<OptimizationData>();
     private LinearInequalityConstraint ineqConstraint;
     private ArrayList<TwiceDifferentiableFunction> constraintFunctions = new ArrayList<TwiceDifferentiableFunction>();
     private RealVector xStart;
@@ -35,7 +34,9 @@ public class BarrierOptimizer extends ConvexOptimizer {
     private double mu = 10.0;
     private OptimizationData[] odType = new OptimizationData[0];
     private HaltingCondition halting;
-    
+    private ArrayList<OptimizationData> newtonArgs = new ArrayList<OptimizationData>();
+    private ArrayList<OptimizationData> innerArgs = new ArrayList<OptimizationData>();
+
     public BarrierOptimizer() {
         super();
     }
@@ -51,7 +52,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
         if (data instanceof HaltingCondition) return false;
         return true;
     }
-    
+
     @Override
     protected void parseOptimizationData(OptimizationData... optData) {
         super.parseOptimizationData(optData);
@@ -72,6 +73,11 @@ public class BarrierOptimizer extends ConvexOptimizer {
                 halting = (HaltingCondition)data;
                 continue;
             }
+            if (data instanceof InnerOptimizationData) {
+                for (OptimizationData d: ((InnerOptimizationData)data).optData)
+                    if (canPassToNewton(d)) innerArgs.add(d);
+                continue;
+            }
         }
         // if we got here, convexObjective exists
         int n = convexObjective.dim();
@@ -89,6 +95,8 @@ public class BarrierOptimizer extends ConvexOptimizer {
                 constraintFunctions.add(new LinearFunction(A.getRowVector(k), b.getEntry(k)));
             }
         }
+        // append any "inner" args - this overrides anything currently in newtonArgs
+        newtonArgs.addAll(innerArgs);
     }
 
     @Override
