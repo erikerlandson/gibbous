@@ -18,11 +18,11 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
-public class FeasiblePointFunction extends TwiceDifferentiableFunction {
+public class FeasiblePointConstraintFunction extends TwiceDifferentiableFunction {
     private final TwiceDifferentiableFunction f;
     private final int n;
 
-    public FeasiblePointFunction(TwiceDifferentiableFunction f) {
+    public FeasiblePointConstraintFunction(TwiceDifferentiableFunction f) {
         this.f = f;
         this.n = f.dim();
     }
