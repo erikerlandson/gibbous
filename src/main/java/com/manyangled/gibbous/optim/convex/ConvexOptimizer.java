@@ -90,6 +90,10 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
                     ineqConstraints.add(new LinearFunction(A.getRowVector(j), b.getEntry(j)));
                 continue;
             }
+            if (data instanceof InequalityConstraintSet) {
+                ineqConstraints.addAll(((InequalityConstraintSet)data).constraints);
+                continue;
+            }
         }
         if (ineqConstraints.size() < 1)
             throw new IllegalStateException("set of inequality constraints was empty");

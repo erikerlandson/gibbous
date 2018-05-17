@@ -27,8 +27,8 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 public class BarrierOptimizer extends ConvexOptimizer {
-    private LinearInequalityConstraint ineqConstraint;
-    private ArrayList<TwiceDifferentiableFunction> constraintFunctions = new ArrayList<TwiceDifferentiableFunction>();
+    private ArrayList<TwiceDifferentiableFunction> constraintFunctions =
+        new ArrayList<TwiceDifferentiableFunction>();
     private RealVector xStart;
     private double epsilon = 1e-10;
     private double mu = 10.0;
@@ -66,7 +66,15 @@ public class BarrierOptimizer extends ConvexOptimizer {
                 continue;
             }
             if (data instanceof LinearInequalityConstraint) {
-                ineqConstraint = (LinearInequalityConstraint)data;
+                RealMatrix A = ((LinearInequalityConstraint)data).A;
+                RealVector b = ((LinearInequalityConstraint)data).b;
+                for (int k = 0; k < b.getDimension(); ++k) {
+                    constraintFunctions.add(new LinearFunction(A.getRowVector(k), b.getEntry(k)));
+                }
+                continue;
+            }
+            if (data instanceof InequalityConstraintSet) {
+                constraintFunctions.addAll(((InequalityConstraintSet)data).constraints);
                 continue;
             }
             if (data instanceof HaltingCondition) {
@@ -87,13 +95,6 @@ public class BarrierOptimizer extends ConvexOptimizer {
                 throw new DimensionMismatchException(xStart.getDimension(), n);
         } else {
             xStart = new ArrayRealVector(n, 0.0);
-        }
-        if (ineqConstraint != null) {
-            RealMatrix A = ineqConstraint.A;
-            RealVector b = ineqConstraint.b;
-            for (int k = 0; k < b.getDimension(); ++k) {
-                constraintFunctions.add(new LinearFunction(A.getRowVector(k), b.getEntry(k)));
-            }
         }
         // append any "inner" args - this overrides anything currently in newtonArgs
         newtonArgs.addAll(innerArgs);
