@@ -75,7 +75,8 @@ public class LogBarrierFunction extends TwiceDifferentiableFunction {
 
     @Override
     public RealVector gradient(final RealVector x) {
-        RealVector g = new ArrayRealVector(f0.gradient(x).toArray());
+        // g should be dense, due to contributions of barrier functions
+        RealVector g = new ArrayRealVector(f0.gradient(x).toArray(), false);
         g.mapMultiplyToSelf(t);
         for (TwiceDifferentiableFunction fi: f) {
             double zi = -1.0 / fi.value(x);
@@ -86,7 +87,11 @@ public class LogBarrierFunction extends TwiceDifferentiableFunction {
 
     @Override
     public RealMatrix hessian(final RealVector x) {
-        RealMatrix h = new Array2DRowRealMatrix(f0.hessian(x).scalarMultiply(t).getData());
+        // h should be dense, due to contributions of barrier functions
+        RealMatrix h = new Array2DRowRealMatrix(f0.hessian(x).getData(), false);
+        for (int j = 0; j < n; ++j)
+            for (int k = 0; k < n; ++k)
+                h.multiplyEntry(j, k, t);
         for (TwiceDifferentiableFunction fi: f) {
             double vi = fi.value(x);
             RealVector gi = fi.gradient(x);
