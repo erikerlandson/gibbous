@@ -26,7 +26,7 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 // Algorithm 10.2
 public class NewtonOptimizer extends ConvexOptimizer {
     private LinearEqualityConstraint eqConstraint;
-    private KKTSolver kktSolver = new SchurKKTSolver();
+    private KKTSolver kktSolver = new CholeskySchurKKTSolver();
     private RealVector xStart;
     private double epsilon = 1e-10;
     private double alpha = 0.25;
