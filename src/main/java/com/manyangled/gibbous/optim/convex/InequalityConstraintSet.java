@@ -30,8 +30,4 @@ public class InequalityConstraintSet implements OptimizationData {
         for (TwiceDifferentiableFunction f: constraints)
             this.constraints.add(f);
     }
-
-    public void add(TwiceDifferentiableFunction f) {
-        this.constraints.add(f);
-    }
 }
