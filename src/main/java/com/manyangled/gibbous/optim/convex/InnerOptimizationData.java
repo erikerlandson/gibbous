@@ -13,12 +13,21 @@ limitations under the License.
 
 package com.manyangled.gibbous.optim.convex;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.commons.math3.optim.OptimizationData;
 
 public class InnerOptimizationData implements OptimizationData {
-    public final OptimizationData[] optData;
+    public final ArrayList<OptimizationData> optData =
+        new ArrayList<OptimizationData>();
+
+    public InnerOptimizationData(Collection<OptimizationData> optData) {
+        this.optData.addAll(optData);
+    }
 
     public InnerOptimizationData(OptimizationData... optData) {
-        this.optData = optData;
+        for (OptimizationData data: optData)
+            this.optData.add(data);
     }
 }

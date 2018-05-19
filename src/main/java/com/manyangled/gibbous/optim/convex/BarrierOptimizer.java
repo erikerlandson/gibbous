@@ -82,7 +82,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
                 continue;
             }
             if (data instanceof InnerOptimizationData) {
-                for (OptimizationData d: ((InnerOptimizationData)data).optData)
+                for (OptimizationData d: ((InnerOptimizationData)data).optData.toArray(odType))
                     if (canPassToNewton(d)) innerArgs.add(d);
                 continue;
             }
