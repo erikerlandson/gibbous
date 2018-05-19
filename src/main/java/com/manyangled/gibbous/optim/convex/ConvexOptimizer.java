@@ -116,6 +116,7 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             new InitialGuess(xStart.toArray()),
             new HaltingCondition(new NegChecker(n)),
             new InnerOptimizationData(
+                new SVDSchurKKTSolver(),
                 new HaltingCondition(new NegChecker(n)))
         );
         double[] xfeas = java.util.Arrays.copyOfRange(spvp.getFirst(), 0, n);
