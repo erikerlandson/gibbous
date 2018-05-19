@@ -26,7 +26,7 @@ public class InequalityConstraintSet implements OptimizationData {
         this.constraints.addAll(constraints);
     }
 
-    public InequalityConstraintSet(TwiceDifferentiableFunction[] constraints) {
+    public InequalityConstraintSet(TwiceDifferentiableFunction... constraints) {
         for (TwiceDifferentiableFunction f: constraints)
             this.constraints.add(f);
     }
