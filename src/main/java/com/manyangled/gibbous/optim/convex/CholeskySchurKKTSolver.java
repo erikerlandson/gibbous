@@ -19,7 +19,7 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.CholeskyDecomposition;
 import org.apache.commons.math3.linear.DecompositionSolver;
 
-public class SchurKKTSolver extends KKTSolver {
+public class CholeskySchurKKTSolver extends KKTSolver {
     // step 1 of algorithm 9.5
     public KKTSolution solve(final RealMatrix H, final RealVector g) {
         DecompositionSolver dsH = (new CholeskyDecomposition(H)).getSolver();
