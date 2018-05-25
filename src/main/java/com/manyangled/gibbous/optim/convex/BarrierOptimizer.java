@@ -46,11 +46,16 @@ public class BarrierOptimizer extends ConvexOptimizer {
         return super.optimize(optData);
     }
 
-    private boolean canPassToNewton(OptimizationData data) {
+    private boolean canPassFromMain(OptimizationData data) {
         if (data instanceof ObjectiveFunction) return false;
         if (data instanceof InitialGuess) return false;
         if (data instanceof HaltingCondition) return false;
         return true;
+    }
+
+    private boolean canPassFromInner(OptimizationData data) {
+        if (data instanceof HaltingCondition) return true;
+        return canPassFromMain(data);
     }
 
     @Override
@@ -58,7 +63,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
         super.parseOptimizationData(optData);
         // save these for configuring newton optimizers
         for (OptimizationData data: optData) {
-            if (canPassToNewton(data)) {
+            if (canPassFromMain(data)) {
                 newtonArgs.add(data);
             }
             if (data instanceof ConvergenceEpsilon) {
@@ -83,7 +88,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
             }
             if (data instanceof InnerOptimizationData) {
                 for (OptimizationData d: ((InnerOptimizationData)data).optData.toArray(odType))
-                    if (canPassToNewton(d)) innerArgs.add(d);
+                    if (canPassFromInner(d)) innerArgs.add(d);
                 continue;
             }
         }
@@ -114,20 +119,22 @@ public class BarrierOptimizer extends ConvexOptimizer {
         RealVector x = xStart;
         for (double t = 1.0 ; (t * epsilon) <= m ; t *= mu) {
             TwiceDifferentiableFunction bf = new LogBarrierFunction(t, convexObjective, constraintFunctions);
+                //RealMatrix th = bf.hessian(x);
+                //System.out.format("*** t= %f  x= %s  h= %s\n", t, x, th);
             NewtonOptimizer newton = new NewtonOptimizer();
             ArrayList<OptimizationData> args = (ArrayList<OptimizationData>)newtonArgs.clone();
             args.add(new ObjectiveFunction(bf));
             args.add(new InitialGuess(x.toArray()));
             PointValuePair pvp = newton.optimize(args.toArray(odType));
-            RealVector tx = new ArrayRealVector(pvp.getFirst());
+            // update for next iteration
+            RealVector xprv = x;
+            x = new ArrayRealVector(pvp.getFirst());
             if ((halting != null) && halting.checker.converged(
                     getIterations(),
-                    new Pair<RealVector, Double>(x, convexObjective.value(x)),
-                    new Pair<RealVector, Double>(tx, convexObjective.value(tx)))) {
+                    new Pair<RealVector, Double>(xprv, convexObjective.value(xprv)),
+                    new Pair<RealVector, Double>(x, convexObjective.value(x)))) {
                 break;
             }
-            // update and proceed to next iteration
-            x = tx;
         }
         return new PointValuePair(x.toArray(), convexObjective.value(x));
     }

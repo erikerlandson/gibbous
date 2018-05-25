@@ -103,6 +103,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 RealVector grad = convexObjective.gradient(x);
                 RealMatrix hess = convexObjective.hessian(x);
                 KKTSolution sol = kktSolver.solve(hess, grad);
+                    //System.out.format("  x=%s  g=%s  xdel=%s\n", x, grad, sol.xDelta);
                 if (sol.lambdaSquared <= (2.0 * epsilon)) break;
                 RealVector xDelta = sol.xDelta;
                 // If the step direction becomes very small that indicates minimum
@@ -122,16 +123,18 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 }
                 // If there was no forward step to make, that indicates minimum
                 if (!foundStep) break;
-                // If we have both current and next, optionally check halting condition
-                if ((halting != null) && halting.checker.converged(
-                        getIterations(),
-                        new Pair<RealVector, Double>(x, v),
-                        new Pair<RealVector, Double>(tx, tv))) {
-                    break;
-                }
-                // update and proceed to next iteration
+                // Update x,v for next iteration
+                RealVector xprv = x;
+                double vprv = v;
                 x = tx;
                 v = tv;
+                // Check halting condition if configured
+                if ((halting != null) && halting.checker.converged(
+                        getIterations(),
+                        new Pair<RealVector, Double>(xprv, vprv),
+                        new Pair<RealVector, Double>(x, v))) {
+                    break;
+                }
             }
             return new PointValuePair(x.toArray(), v);
         } else {
@@ -173,17 +176,19 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 }
                 // If there was no forward step to make, that indicates minimum
                 if (!foundStep) break;
-                // If we have both current and next, optionally check halting condition
-                if ((halting != null) && halting.checker.converged(
-                        getIterations(),
-                        new Pair<RealVector, Double>(x, v),
-                        new Pair<RealVector, Double>(tx, tv))) {
-                    break;
-                }
-                // update and proceed to next iteration
+                // update for next iteration
+                RealVector xprv = x;
+                double vprv = v;
                 x = tx;
                 nu = tnu;
                 v = tv;
+                // check halting condition, if it was configured
+                if ((halting != null) && halting.checker.converged(
+                        getIterations(),
+                        new Pair<RealVector, Double>(xprv, vprv),
+                        new Pair<RealVector, Double>(x, v))) {
+                    break;
+                }
             }
             return new PointValuePair(x.toArray(), v);
         }
