@@ -26,7 +26,7 @@ import org.apache.commons.math3.linear.SingularValueDecomposition;
 
 import com.manyangled.gibbous.optim.convex.KKTSolver;
 import com.manyangled.gibbous.optim.convex.KKTSolution;
-import com.manyangled.gibbous.optim.convex.SchurKKTSolver;
+import com.manyangled.gibbous.optim.convex.CholeskySchurKKTSolver;
 
 import static com.manyangled.gibbous.COTestingUtils.eps;
 
