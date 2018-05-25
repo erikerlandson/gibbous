@@ -47,11 +47,25 @@ public class FeasiblePointTest {
     }
 
     @Test
-    public void test2DHalfPlane() {
+    public void test1() {
         InequalityConstraintSet hp = new InequalityConstraintSet(
-            new LinearFunction(new double[] { 1.0, 0.0 }, 0.0),
-            new LinearFunction(new double[] { 0.0, 1.0 }, 0.0)
+                //new LinearFunction(new double[] { 1.0, 0.0 }, -2.0),
+            new LinearFunction(new double[] { -1.0, 0.0 }, 1.0)
+                //new LinearFunction(new double[] { 0.0, 1.0 }, -2.0),
+                //new LinearFunction(new double[] { 0.0, -1.0 }, 1.0)
         );
         testFeasibleConstraints(hp);
     }
+/*
+    @Test
+    public void test2DSquareRegion() {
+        InequalityConstraintSet hp = new InequalityConstraintSet(
+            new LinearFunction(new double[] { 1.0, 0.0 }, -2.0),
+            new LinearFunction(new double[] { -1.0, 0.0 }, 1.0),
+            new LinearFunction(new double[] { 0.0, 1.0 }, -2.0),
+            new LinearFunction(new double[] { 0.0, -1.0 }, 1.0)
+        );
+        testFeasibleConstraints(hp);
+    }
+*/
 }
