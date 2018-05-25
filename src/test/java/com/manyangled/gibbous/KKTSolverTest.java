@@ -81,7 +81,7 @@ public class KKTSolverTest {
         double[][] A = { { 1.0, 1.0 } };
         double[] g = { 1.0, 2.0 };
         double[] h = { 3.0 };
-        testWithConstraints(new SchurKKTSolver(), H, A, g, h);
+        testWithConstraints(new CholeskySchurKKTSolver(), H, A, g, h);
     }
 
     @Test
@@ -93,14 +93,14 @@ public class KKTSolverTest {
                          { 6.0, 5.0, 4.0 } };
         double[] g = { 1.0, 4.0, 9.0 };
         double[] h = { 3.0, 7.0 };
-        testWithConstraints(new SchurKKTSolver(), H, A, g, h);
+        testWithConstraints(new CholeskySchurKKTSolver(), H, A, g, h);
     }
 
     @Test
     public void testSchurUnconstrained1() {
         double[][] H = { { 5.0, 1.0 }, { 1.0, 5.0 } };
         double[] g = { 3.0, 7.0 };
-        testNoConstraints(new SchurKKTSolver(), H, g);
+        testNoConstraints(new CholeskySchurKKTSolver(), H, g);
     }
 
     @Test
@@ -109,6 +109,6 @@ public class KKTSolverTest {
                          { 2.0, 7.0, 2.0 },
                          { 1.0, 2.0, 7.0 } };
         double[] g = { 9.0, 4.0, 1.0 };
-        testNoConstraints(new SchurKKTSolver(), H, g);
+        testNoConstraints(new CholeskySchurKKTSolver(), H, g);
     }
 }
