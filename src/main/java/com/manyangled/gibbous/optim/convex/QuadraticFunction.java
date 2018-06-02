@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.Arrays;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.DiagonalMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
@@ -67,5 +68,19 @@ public class QuadraticFunction extends TwiceDifferentiableFunction {
     @Override
     public RealMatrix hessian(final RealVector x) {
         return A.copy();
+    }
+
+    public static QuadraticFunction nBallConstraintFunction(RealVector center, double r) {
+        int n = center.getDimension();
+        double[] all1 = new double[n];
+        java.util.Arrays.fill(all1, 1.0);
+        RealMatrix A = new DiagonalMatrix(all1);
+        RealVector b = center.mapMultiply(-1.0);
+        double c = 0.5 * (center.dotProduct(center) - r*r);
+        return new QuadraticFunction(A, b, c);
+    }
+
+    public static QuadraticFunction nBallConstraintFunction(double[] center, double r) {
+        return nBallConstraintFunction(new ArrayRealVector(center), r);
     }
 }
