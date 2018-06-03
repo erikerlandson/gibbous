@@ -69,6 +69,7 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
     }
 
     public static PointValuePair feasiblePoint(OptimizationData... optData) {
+        double epsilon = 1e-10;
         RealVector initialGuess = null;
         ArrayList<OptimizationData> barrierArgs = new ArrayList<OptimizationData>();
         ArrayList<TwiceDifferentiableFunction> ineqConstraints =
@@ -94,6 +95,10 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             }
             if (data instanceof InequalityConstraintSet) {
                 ineqConstraints.addAll(((InequalityConstraintSet)data).constraints);
+                continue;
+            }
+            if (data instanceof ConvergenceEpsilon) {
+                epsilon = ((ConvergenceEpsilon)data).epsilon;
                 continue;
             }
             if (data instanceof InnerOptimizationData) {
@@ -154,7 +159,7 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             // if we are no longer moving, our augmented n-ball constraint is no longer
             // influencing the result, and we've identified our mini-max point, whether
             // it is feasible or not.
-            if (xdelta.dotProduct(xdelta) < 1e-10) break;
+            if (xdelta.dotProduct(xdelta) < epsilon) break;
         }
         return new PointValuePair(x.toArray(), s);
     }
