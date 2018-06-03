@@ -128,8 +128,7 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             PointValuePair spvp = (new NewtonOptimizer()).optimize(
                 new InitialGuess(x.toArray()),
                 new ObjectiveFunction(new SmoothMaxFunction(alpha, augConstraints.toArray(fType))),
-                new HaltingCondition(new NegChecker()),
-                new SVDSchurKKTSolver()
+                new HaltingCondition(new NegChecker())
             );
             RealVector xprv = x;
             // update our solution x, and the true maximum of constraint functions
