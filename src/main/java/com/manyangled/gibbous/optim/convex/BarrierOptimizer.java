@@ -119,8 +119,6 @@ public class BarrierOptimizer extends ConvexOptimizer {
         RealVector x = xStart;
         for (double t = 1.0 ; (t * epsilon) <= m ; t *= mu) {
             TwiceDifferentiableFunction bf = new LogBarrierFunction(t, convexObjective, constraintFunctions);
-                //RealMatrix th = bf.hessian(x);
-                //System.out.format("*** t= %f  x= %s  h= %s\n", t, x, th);
             NewtonOptimizer newton = new NewtonOptimizer();
             ArrayList<OptimizationData> args = (ArrayList<OptimizationData>)newtonArgs.clone();
             args.add(new ObjectiveFunction(bf));
