@@ -96,25 +96,34 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         final int n = ineqConstraints.get(0).dim();
         if (initialGuess == null) initialGuess = new ArrayRealVector(n, 0.0);
         final TwiceDifferentiableFunction[] fk = ineqConstraints.toArray(fType);
+        // These are free parameters, and might be exposed to a user, but I'm not currently
+        // convinced there's a lot of value to tweaking them.
+        final double minNBallFactor = Math.log(1e-3);
+        final double minSigma = 10.0;
+        final double sigmaFactor = 1.5;
+        // Initialize our location and get the maximum over the constraint functions
         RealVector x = initialGuess;
         double s = fkMax(x.toArray(), fk);
+        // If our point is already feasible we are done
         if (s < 0.0) return new PointValuePair(x.toArray(), s);
         while (true) {
-            //System.out.format("***r= %f  s= %f  x= %s\n", r, s, x);
-            double sigma = 10.0;
-            if (s > 0.0) sigma = Math.max(sigma, 1.5*Math.sqrt(s));
+            //System.out.format("***s= %f  x= %s\n", s, x);
+            double sigma = minSigma;
+            if (s > 0.0) sigma = Math.max(sigma, sigmaFactor*Math.sqrt(s));
             // add the n-ball constraint, to guarantee a non-singular hessian
             TwiceDifferentiableFunction nbc = QuadraticFunction.nBallConstraintFunction(x, 1.0, 1.0/sigma);
             ArrayList<TwiceDifferentiableFunction> augConstraints =
                 (ArrayList<TwiceDifferentiableFunction>)(ineqConstraints.clone());
             augConstraints.add(nbc);
+            // if necessary, tune the smooth-max alpha to guarantee that our n-ball hessian
+            // isn't totally washed out.
+            double v0 = nbc.value(x);
+            double alpha = 1.0;
+            if (v0 < (s + minNBallFactor)) alpha = minNBallFactor / (v0 - s);
             // return the point (x) that minimizes the maximum value of fk(x), and/or (x)
             // where fk(x) is negative for all constraints fk.
             // Smooth-max over fk is always >= to true max, so if smooth-max becomes negative
             // we know max is negative (feasible).
-            double v0 = nbc.value(x);
-            double alpha = 1.0;
-            if (v0 < (s - 8.0)) alpha = -8 / (v0 - s);
             PointValuePair spvp = (new NewtonOptimizer()).optimize(
                 new InitialGuess(x.toArray()),
                 new ObjectiveFunction(new SmoothMaxFunction(alpha, augConstraints.toArray(fType))),
