@@ -133,6 +133,13 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         if (s < 0.0 && !hasLinearInequalityConstraint) return new PointValuePair(x.toArray(), s);
         while (true) {
             //System.out.format("***s= %f  x= %s\n", s, x);
+            // Apply scaling to the n-ball constraint so that it doesn't dominate the location
+            // of the optimal point overly much. This substantially increases the convergence rate.
+            // If the maximum value of the constraint functions grows very large, then that indicates
+            // our current distance to our feasible region is large, so have the scale increase
+            // accordingly. An n-ball constraint is basically squared distance from center, so scale
+            // grows proportionally to sqrt of (s). Sigma-factor is sort of a magic constant hack, but
+            // appears to improve convergence performance.
             double sigma = minSigma;
             if (s > 0.0) sigma = Math.max(sigma, sigmaFactor*Math.sqrt(s));
             // add the n-ball constraint, to guarantee a non-singular hessian
