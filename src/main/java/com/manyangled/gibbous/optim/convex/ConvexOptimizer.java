@@ -73,8 +73,14 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         ArrayList<OptimizationData> barrierArgs = new ArrayList<OptimizationData>();
         ArrayList<TwiceDifferentiableFunction> ineqConstraints =
             new ArrayList<TwiceDifferentiableFunction>();
-        TwiceDifferentiableFunction[] fType = new TwiceDifferentiableFunction[0];
+        final TwiceDifferentiableFunction[] fType = new TwiceDifferentiableFunction[0];
+        final OptimizationData[] odType = new OptimizationData[0];
+        final ArrayList<OptimizationData> solverArgs = new ArrayList<OptimizationData>();
+        final ArrayList<OptimizationData> innerArgs = new ArrayList<OptimizationData>();
         for (OptimizationData data: optData) {
+            if (canPassFromMain(data)) {
+                solverArgs.add(data);
+            }
             if (data instanceof InitialGuess) {
                 initialGuess = new ArrayRealVector(((InitialGuess)data).getInitialGuess());
                 continue;
@@ -90,7 +96,14 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
                 ineqConstraints.addAll(((InequalityConstraintSet)data).constraints);
                 continue;
             }
+            if (data instanceof InnerOptimizationData) {
+                for (OptimizationData d: ((InnerOptimizationData)data).optData.toArray(odType))
+                    if (canPassFromInner(d)) innerArgs.add(d);
+                continue;
+            }
         }
+        // Inner arguments override "main" arguments to the inner solver
+        solverArgs.addAll(innerArgs);
         if (ineqConstraints.size() < 1)
             throw new IllegalStateException("set of inequality constraints was empty");
         final int n = ineqConstraints.get(0).dim();
@@ -106,6 +119,7 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         RealVector x = initialGuess;
         double s = fkMax(x.toArray(), fk);
         // If our point is already feasible we are done
+        // I need to account for satisfying linear constraints here
         if (s < 0.0) return new PointValuePair(x.toArray(), s);
         while (true) {
             //System.out.format("***s= %f  x= %s\n", s, x);
@@ -125,11 +139,11 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             // where fk(x) is negative for all constraints fk.
             // Smooth-max over fk is always >= to true max, so if smooth-max becomes negative
             // we know max is negative (feasible).
-            PointValuePair spvp = (new NewtonOptimizer()).optimize(
-                new InitialGuess(x.toArray()),
-                new ObjectiveFunction(new SmoothMaxFunction(alpha, augConstraints.toArray(fType))),
-                new HaltingCondition(new NegChecker())
-            );
+            ArrayList<OptimizationData> args = (ArrayList<OptimizationData>)solverArgs.clone();
+            args.add(new InitialGuess(x.toArray()));
+            args.add(new ObjectiveFunction(new SmoothMaxFunction(alpha, augConstraints.toArray(fType))));
+            args.add(new HaltingCondition(new NegChecker()));
+            PointValuePair spvp = (new NewtonOptimizer()).optimize(args.toArray(odType));
             RealVector xprv = x;
             // update our solution x, and the true maximum of constraint functions
             x = new ArrayRealVector(spvp.getFirst());
@@ -143,6 +157,17 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             if (xdelta.dotProduct(xdelta) < 1e-10) break;
         }
         return new PointValuePair(x.toArray(), s);
+    }
+
+    private static boolean canPassFromMain(OptimizationData data) {
+        if (data instanceof InitialGuess) return false;
+        if (data instanceof ObjectiveFunction) return false;
+        if (data instanceof HaltingCondition) return false;
+        return true;
+    }
+
+    private static boolean canPassFromInner(OptimizationData data) {
+        return canPassFromMain(data);
     }
 
     private static double fkMax(double[] x, TwiceDifferentiableFunction[] fk) {
