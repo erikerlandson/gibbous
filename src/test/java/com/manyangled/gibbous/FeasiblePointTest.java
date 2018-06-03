@@ -60,11 +60,12 @@ public class FeasiblePointTest {
 
     @Test
     public void test2DSquareRegion() {
+        double offset = 100.0;
         InequalityConstraintSet hp = new InequalityConstraintSet(
-            new LinearFunction(new double[] { 1.0, 0.0 }, -5.0),
-            new LinearFunction(new double[] { -1.0, 0.0 }, 1.0),
-            new LinearFunction(new double[] { 0.0, 1.0 }, -5.0),
-            new LinearFunction(new double[] { 0.0, -1.0 }, 1.0)
+            new LinearFunction(new double[] { 1.0, 0.0 }, -(5.0 + offset)),
+            new LinearFunction(new double[] { -1.0, 0.0 }, 1.0 + offset),
+            new LinearFunction(new double[] { 0.0, 1.0 }, -(5.0 + offset)),
+            new LinearFunction(new double[] { 0.0, -1.0 }, 1.0 + offset)
         );
         testFeasibleConstraints(hp);
     }
