@@ -101,6 +101,7 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         final double minNBallFactor = Math.log(1e-3);
         final double minSigma = 10.0;
         final double sigmaFactor = 1.5;
+        final double targetTolerance = 0.01;
         // Initialize our location and get the maximum over the constraint functions
         RealVector x = initialGuess;
         double s = fkMax(x.toArray(), fk);
@@ -135,7 +136,7 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             x = new ArrayRealVector(spvp.getFirst());
             s = fkMax(spvp.getFirst(), fk);
             // if our latest x satisfies all contstraints, we can stop
-            if (s < -0.1) break;
+            if (s < -targetTolerance) break;
             RealVector xdelta = x.subtract(xprv);
             // if we are no longer moving, our augmented n-ball constraint is no longer
             // influencing the result, and we've identified our mini-max point, whether
