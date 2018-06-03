@@ -107,8 +107,12 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
                 continue;
             }
         }
-        // Inner arguments override "main" arguments to the inner solver
+        // Inner arguments apply after "main" arguments to the inner solver
         solverArgs.addAll(innerArgs);
+        // check to see if any linear equality constraints are in effect
+        boolean hasLinearInequalityConstraint = false;
+        for (OptimizationData data: solverArgs.toArray(odType))
+            if (data instanceof LinearEqualityConstraint) hasLinearInequalityConstraint = true;
         if (ineqConstraints.size() < 1)
             throw new IllegalStateException("set of inequality constraints was empty");
         final int n = ineqConstraints.get(0).dim();
@@ -123,9 +127,10 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         // Initialize our location and get the maximum over the constraint functions
         RealVector x = initialGuess;
         double s = fkMax(x.toArray(), fk);
-        // If our point is already feasible we are done
-        // I need to account for satisfying linear constraints here
-        if (s < 0.0) return new PointValuePair(x.toArray(), s);
+        // If our point is already feasible we are done, unless we need to satisfy
+        // linear equality constraints, in which case just run it through the Newton algorithm to make
+        // sure they are satisfied
+        if (s < 0.0 && !hasLinearInequalityConstraint) return new PointValuePair(x.toArray(), s);
         while (true) {
             //System.out.format("***s= %f  x= %s\n", s, x);
             double sigma = minSigma;
