@@ -103,7 +103,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 RealVector grad = convexObjective.gradient(x);
                 RealMatrix hess = convexObjective.hessian(x);
                 KKTSolution sol = kktSolver.solve(hess, grad);
-                    //System.out.format("  x=%s  g=%s  xdel=%s\n", x, grad, sol.xDelta);
+                //System.out.format("  v=%f  x=%s  g=%s  h= %s  xdel=%s\n", v, x, grad, hess, sol.xDelta);
                 if (sol.lambdaSquared <= (2.0 * epsilon)) break;
                 RealVector xDelta = sol.xDelta;
                 // If the step direction becomes very small that indicates minimum
