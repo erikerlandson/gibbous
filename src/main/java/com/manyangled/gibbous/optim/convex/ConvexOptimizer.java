@@ -99,13 +99,12 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         RealVector x = initialGuess;
         double s = fkMax(x.toArray(), fk);
         if (s < 0.0) return new PointValuePair(x.toArray(), s);
-        double r = 1.0;
         while (true) {
             //System.out.format("***r= %f  s= %f  x= %s\n", r, s, x);
             double sigma = 10.0;
             if (s > 0.0) sigma = Math.max(sigma, 1.5*Math.sqrt(s));
             // add the n-ball constraint, to guarantee a non-singular hessian
-            TwiceDifferentiableFunction nbc = QuadraticFunction.nBallConstraintFunction(x, r, 1.0/sigma);
+            TwiceDifferentiableFunction nbc = QuadraticFunction.nBallConstraintFunction(x, 1.0, 1.0/sigma);
             ArrayList<TwiceDifferentiableFunction> augConstraints =
                 (ArrayList<TwiceDifferentiableFunction>)(ineqConstraints.clone());
             augConstraints.add(nbc);
