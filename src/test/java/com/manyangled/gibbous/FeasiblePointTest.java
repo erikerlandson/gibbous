@@ -40,32 +40,33 @@ import static com.manyangled.gibbous.COTestingUtils.eps;
 public class FeasiblePointTest {
     private void testFeasibleConstraints(InequalityConstraintSet constraints) {
         PointValuePair pvp = ConvexOptimizer.feasiblePoint(constraints);
+        //System.out.format("fkmax= %s\n", pvp.getSecond());
         assertTrue(pvp.getSecond() < 0.0);
         for (TwiceDifferentiableFunction f: constraints.constraints) {
+            double y = f.value(pvp.getFirst());
+            //System.out.format("y= %s\n", y);
             assertTrue(f.value(pvp.getFirst()) < 0.0);
         }
     }
 
     @Test
-    public void test1() {
+    public void test2DHalfPlane() {
         InequalityConstraintSet hp = new InequalityConstraintSet(
-                //new LinearFunction(new double[] { 1.0, 0.0 }, -2.0),
-            new LinearFunction(new double[] { -1.0, 0.0 }, 1.0)
-                //new LinearFunction(new double[] { 0.0, 1.0 }, -2.0),
-                //new LinearFunction(new double[] { 0.0, -1.0 }, 1.0)
+            new LinearFunction(new double[] { -1.0, 0.0 }, 100.0)
         );
         testFeasibleConstraints(hp);
     }
-/*
+
+
     @Test
     public void test2DSquareRegion() {
         InequalityConstraintSet hp = new InequalityConstraintSet(
-            new LinearFunction(new double[] { 1.0, 0.0 }, -2.0),
+            new LinearFunction(new double[] { 1.0, 0.0 }, -5.0),
             new LinearFunction(new double[] { -1.0, 0.0 }, 1.0),
-            new LinearFunction(new double[] { 0.0, 1.0 }, -2.0),
+            new LinearFunction(new double[] { 0.0, 1.0 }, -5.0),
             new LinearFunction(new double[] { 0.0, -1.0 }, 1.0)
         );
         testFeasibleConstraints(hp);
     }
-*/
+
 }
