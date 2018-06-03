@@ -60,15 +60,11 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
     }
 
     public static class NegChecker implements ConvergenceChecker<Pair<RealVector, Double> > {
-        public final int j;
-        public NegChecker(int j) {
-            this.j = j;
-        }
         @Override
         public boolean converged(
             int iter,
             Pair<RealVector, Double> prv, Pair<RealVector, Double> cur) {
-            return cur.getFirst().getEntry(j) < 0.0;
+            return cur.getSecond() < 0.0;
         }
     }
 
@@ -99,29 +95,55 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             throw new IllegalStateException("set of inequality constraints was empty");
         final int n = ineqConstraints.get(0).dim();
         if (initialGuess == null) initialGuess = new ArrayRealVector(n, 0.0);
-        double s = Double.NEGATIVE_INFINITY;
-        ArrayList<TwiceDifferentiableFunction> iqcs = new ArrayList<TwiceDifferentiableFunction>();
-        for (TwiceDifferentiableFunction f: ineqConstraints.toArray(fType)) {
-            double y = f.value(initialGuess);
-            if (s < y) s = y;
-            iqcs.add(new FeasiblePointConstraintFunction(f));
+        final TwiceDifferentiableFunction[] fk = ineqConstraints.toArray(fType);
+        RealVector x = initialGuess;
+        double s = fkMax(x.toArray(), fk);
+        if (s < 0.0) return new PointValuePair(x.toArray(), s);
+        double r = 1.0;
+        while (true) {
+            //System.out.format("***r= %f  s= %f  x= %s\n", r, s, x);
+            double sigma = 10.0;
+            if (s > 0.0) sigma = Math.max(sigma, 1.5*Math.sqrt(s));
+            // add the n-ball constraint, to guarantee a non-singular hessian
+            TwiceDifferentiableFunction nbc = QuadraticFunction.nBallConstraintFunction(x, r, 1.0/sigma);
+            ArrayList<TwiceDifferentiableFunction> augConstraints =
+                (ArrayList<TwiceDifferentiableFunction>)(ineqConstraints.clone());
+            augConstraints.add(nbc);
+            // return the point (x) that minimizes the maximum value of fk(x), and/or (x)
+            // where fk(x) is negative for all constraints fk.
+            // Smooth-max over fk is always >= to true max, so if smooth-max becomes negative
+            // we know max is negative (feasible).
+            double v0 = nbc.value(x);
+            double alpha = 1.0;
+            if (v0 < (s - 8.0)) alpha = -8 / (v0 - s);
+            PointValuePair spvp = (new NewtonOptimizer()).optimize(
+                new InitialGuess(x.toArray()),
+                new ObjectiveFunction(new SmoothMaxFunction(alpha, augConstraints.toArray(fType))),
+                new HaltingCondition(new NegChecker()),
+                new SVDSchurKKTSolver()
+            );
+            RealVector xprv = x;
+            // update our solution x, and the true maximum of constraint functions
+            x = new ArrayRealVector(spvp.getFirst());
+            s = fkMax(spvp.getFirst(), fk);
+            // if our latest x satisfies all contstraints, we can stop
+            if (s < -0.1) break;
+            RealVector xdelta = x.subtract(xprv);
+            // if we are no longer moving, our augmented n-ball constraint is no longer
+            // influencing the result, and we've identified our mini-max point, whether
+            // it is feasible or not.
+            if (xdelta.dotProduct(xdelta) < 1e-10) break;
         }
-        // If all inequality constraints are < 0, the initial guess is already feasible
-        if (s < 0.0) return new PointValuePair(initialGuess.toArray(), s);
-        RealVector xStart = initialGuess.append(1.0 + s);
-        BarrierOptimizer barrier = new BarrierOptimizer();
-        PointValuePair spvp = barrier.optimize(
-            new ObjectiveFunction(new FeasiblePointObjectiveFunction(n)),
-            new InequalityConstraintSet(iqcs),
-            new InitialGuess(xStart.toArray()),
-            new HaltingCondition(new NegChecker(n)),
-            new InnerOptimizationData(
-                new SVDSchurKKTSolver(),
-                new HaltingCondition(new NegChecker(n)))
-        );
-        double[] xfeas = java.util.Arrays.copyOfRange(spvp.getFirst(), 0, n);
-        // return the feasible point (minus augmented dimension s) and final value of s
-        return new PointValuePair(xfeas, spvp.getFirst()[n]);
+        return new PointValuePair(x.toArray(), s);
+    }
+
+    private static double fkMax(double[] x, TwiceDifferentiableFunction[] fk) {
+        double s = Double.NEGATIVE_INFINITY;
+        for (TwiceDifferentiableFunction f: fk) {
+            double y = f.value(x);
+            if (s < y) s = y;
+        }
+        return s;
     }
 
     // known dense Matrix classes
