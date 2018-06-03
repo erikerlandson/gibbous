@@ -70,17 +70,28 @@ public class QuadraticFunction extends TwiceDifferentiableFunction {
         return A.copy();
     }
 
-    public static QuadraticFunction nBallConstraintFunction(RealVector center, double r) {
+    public static QuadraticFunction nBallConstraintFunction(RealVector center, double r, double s) {
         int n = center.getDimension();
+        if (n < 1) throw new IllegalArgumentException("center vector must have dimension > 0");
+        if (s <= 0.0) throw new IllegalArgumentException("scale s must be > 0");
+        if (r <= 0.0) throw new IllegalArgumentException("radius r must be > 0");
         double[] all1 = new double[n];
-        java.util.Arrays.fill(all1, 1.0);
+        java.util.Arrays.fill(all1, s*s);
         RealMatrix A = new DiagonalMatrix(all1);
-        RealVector b = center.mapMultiply(-1.0);
-        double c = 0.5 * (center.dotProduct(center) - r*r);
+        RealVector b = center.mapMultiply(-(s*s));
+        double c = 0.5 * (s*s*center.dotProduct(center) - r*r);
         return new QuadraticFunction(A, b, c);
     }
 
-    public static QuadraticFunction nBallConstraintFunction(double[] center, double r) {
-        return nBallConstraintFunction(new ArrayRealVector(center), r);
+    public static QuadraticFunction nBallConstraintFunction(double[] center, double r, double s) {
+        return nBallConstraintFunction(new ArrayRealVector(center), r, s);
     }
+
+    public static QuadraticFunction nBallConstraintFunction(RealVector center, double r) {
+        return nBallConstraintFunction(center, r, 1.0);
+    }
+
+    public static QuadraticFunction nBallConstraintFunction(double[] center, double r) {
+        return nBallConstraintFunction(new ArrayRealVector(center), r, 1.0);
+    }    
 }
