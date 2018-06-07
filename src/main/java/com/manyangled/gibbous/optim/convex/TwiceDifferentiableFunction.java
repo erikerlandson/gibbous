@@ -20,23 +20,68 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
+/**
+ * A MultivariateFunction that also has a defined gradient and Hessian
+ */
 public abstract class TwiceDifferentiableFunction implements MultivariateFunction {
+    /**
+     * Returns the dimensionality of the function domain.
+     * If dim() returns (n) then this function expects an n-vector as its input.
+     */
     public abstract int dim();
-
+    
+    /**
+     * Returns the value of this function at (x)
+     *
+     * @param x a point to evaluate this function at.
+     * @return the value of this function at (x)
+     */
     public abstract double value(final RealVector x);
+
+    /**
+     * Returns the gradient of this function at (x)
+     *
+     * @param x a point to evaluate this gradient at
+     * @return the gradient of this function at (x)
+     */
     public abstract RealVector gradient(final RealVector x);
+
+    /**
+     * The Hessian of this function at (x)
+     *
+     * @param x a point to evaluate this Hessian at
+     * @return the Hessian of this function at (x)
+     */
     public abstract RealMatrix hessian(final RealVector x);
     
+    /**
+     * Returns the value of this function at (x)
+     *
+     * @param x a point to evaluate this function at.
+     * @return the value of this function at (x)
+     */
+    @Override
+    public double value(final double[] x) {
+        return value(new ArrayRealVector(x, false));
+    }
+
+    /**
+     * Returns the gradient of this function at (x)
+     *
+     * @param x a point to evaluate this gradient at
+     * @return the gradient of this function at (x)
+     */
     public RealVector gradient(final double[] x) {
         return gradient(new ArrayRealVector(x, false));
     }
 
+    /**
+     * The Hessian of this function at (x)
+     *
+     * @param x a point to evaluate this Hessian at
+     * @return the Hessian of this function at (x)
+     */
     public RealMatrix hessian(final double[] x) {
         return hessian(new ArrayRealVector(x, false));
-    }
-
-    @Override
-    public double value(final double[] x) {
-        return value(new ArrayRealVector(x, false));
     }
 }
