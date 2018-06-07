@@ -15,8 +15,21 @@ package com.manyangled.gibbous.optim.convex;
 
 import org.apache.commons.math3.optim.OptimizationData;
 
+/**
+ * Defines an epsilon as a threshold for measuring a small change that approximates convergences of
+ * some iterative optimization.
+ */
 public class ConvergenceEpsilon implements OptimizationData {
+    /**
+     * The actual epsilon value. Strictly > 0.
+     */
     public final double epsilon;
+
+    /**
+     * Construct a new ConvergenceEpsilon parameter with the given epsilon value
+     *
+     * @param eps The epsilon value to use. Must be strictly > 0.
+     */
     public ConvergenceEpsilon(double eps) {
         if (eps <= 0.0)
             throw new IllegalArgumentException("epsilon must be > 0");
