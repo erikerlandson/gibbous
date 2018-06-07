@@ -30,6 +30,8 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 scalacOptions in (Compile, doc) ++= Seq("-doc-root-content", baseDirectory.value+"/root-doc.txt")
 
-enablePlugins(ScalaUnidocPlugin, GhpagesPlugin)
+// xsbt unidoc; xsbt previewSite; xsbt ghpagesPushSite
+
+enablePlugins(JavaUnidocPlugin, GenJavadocPlugin, GhpagesPlugin)
 
 git.remoteRepo := "git@github.com:erikerlandson/gibbous.git"
