@@ -42,7 +42,7 @@ public class BarrierOptimizerTest {
         QuadraticFunction q = translatedQF(h, center);
         double[] ig = { 10.0, 10.0 };
         double[][] A = { { -1.0, -1.0 } }; // constraint x + y > 1
-        double[] b = { 1.0 };
+        double[] b = { -1.0 };
         double[] xminTarget = { 0.5, 0.5 };
         double vminTarget = 0.25;
         BarrierOptimizer barrier = new BarrierOptimizer();
@@ -63,7 +63,7 @@ public class BarrierOptimizerTest {
         QuadraticFunction q = translatedQF(h, center);
         double[] ig = { 10.0, 10.0 };
         double[][] A = { { -1.0, -1.0 } }; // constraint x + y > 7
-        double[] b = { 7.0 };
+        double[] b = { -7.0 };
         double[] xminTarget = { 3.5, 3.5 };
         double vminTarget = 7.25;
         BarrierOptimizer barrier = new BarrierOptimizer();
@@ -84,7 +84,7 @@ public class BarrierOptimizerTest {
         QuadraticFunction q = translatedQF(h, center);
         double[] ig = { 2.0, 2.0, 2.0 };
         double[][] A = { { -1.0, -1.0, -1.0 } }; // constraint x + y + z > 1
-        double[] b = { 1.0 };
+        double[] b = { -1.0 };
         double[] xminTarget = { 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0 };
         double vminTarget = 1.0 / 6.0;
         BarrierOptimizer barrier = new BarrierOptimizer();
@@ -105,7 +105,7 @@ public class BarrierOptimizerTest {
         QuadraticFunction q = translatedQF(h, center);
         double[] ig = { 15.0, 15.0, 15.0 };
         double[][] A = { { -1.0, -1.0, -1.0 } }; // constraint x + y + z > 31
-        double[] b = { 31.0 };
+        double[] b = { -31.0 };
         double[] xminTarget = { 10.0 + (1.0 / 3.0), 10.0 + (1.0 / 3.0), 10.0 + (1.0 / 3.0) };
         double vminTarget = h + (1.0 / 6.0);
         BarrierOptimizer barrier = new BarrierOptimizer();

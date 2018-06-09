@@ -18,14 +18,31 @@ import java.util.Collection;
 
 import org.apache.commons.math3.optim.OptimizationData;
 
+/**
+ * A collection of {@link OptimizationData} arguments that are passed to an inner optimizer.
+ * <p>
+ * For example, the {@link BarrierOptimizer} operates by iterative calls to the
+ * {@link NewtonOptimizer}. A user may pass configuration arguments directly to the
+ * {@link NewtonOptimizer} by putting them in a {@link InnerOptimizationData} argument
+ * while invoking {@link BarrierOptimizer#optimize(OptimizationData... optData)}
+ */
 public class InnerOptimizationData implements OptimizationData {
     public final ArrayList<OptimizationData> optData =
         new ArrayList<OptimizationData>();
 
+    /**
+     * Create an InnerOptimizationData payload from a Collection of OptimizationData
+     * @param optData the Collection of OptimizationData arguments
+     */
     public InnerOptimizationData(Collection<OptimizationData> optData) {
         this.optData.addAll(optData);
     }
 
+    /**
+     * Create an InnerOptimizationData payload from an argument list (or array)
+     * of OptimizationData
+     * @param optData the list of OptimizationData arguments
+     */
     public InnerOptimizationData(OptimizationData... optData) {
         for (OptimizationData data: optData)
             this.optData.add(data);

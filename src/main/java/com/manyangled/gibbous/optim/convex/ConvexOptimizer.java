@@ -29,6 +29,10 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
+/**
+ * An abstract class that represents a {@link MultivariateOptimizer} capable of
+ * optimizing convex functions, possibly under a set of convex constraints.
+ */
 public abstract class ConvexOptimizer extends MultivariateOptimizer {
     protected TwiceDifferentiableFunction convexObjective;
 
@@ -59,6 +63,18 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         return super.optimize(optData);
     }
 
+    /**
+     * A {@link ConvergenceChecker} specialized to be used as a halting condition when solving
+     * for feasible points. Allows the optimization to halt when the objective function becomes
+     * negative.
+     * <p>
+     * NOTE: This class is primarily intended for internal use by
+     * {@link #feasiblePoint(OptimizationData... optData)}
+     * <p>
+     * A useful property is that objective functions having no finite minimum can
+     * be handled via a {@link HaltingCondition} having a {@link NegChecker} payload. An example
+     * of such a problem is solving a feasible point for a single planar constraint.
+     */
     public static class NegChecker implements ConvergenceChecker<Pair<RealVector, Double> > {
         @Override
         public boolean converged(
@@ -68,6 +84,35 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         }
     }
 
+    /**
+     * Solve a feasible point for a set of constraints, or determine if the constraints are not feasible.
+     * <p>
+     * Implements feasible point algorithm described
+     * <a href="http://erikerlandson.github.io/blog/2018/06/03/solving-feasible-points-with-smooth-max/">here.</a>
+     * <p>
+     * Supports the following {@link OptimizationData} parameters as arguments
+     * <ul>
+     *   <li>initial guess {@link InitialGuess} - optional: defaults to zero-vector. </li>
+     *   <li>convex inequality constraints: {@link InequalityConstraintSet} - optional </li>
+     *   <li>linear inequality constraints: {@link LinearInequalityConstraint} - optional </li>
+     *   <li>linear equality constraints: {@link LinearEqualityConstraint} - optional </li>
+     *   <li>convergence epsilon: {@link ConvergenceEpsilon} - optional </li>
+     *   <li>inner optimizer parameters: {@link InnerOptimizationData} - optional: passed down to {@link NewtonOptimizer} inner calls. </li>
+     * </ul>
+     * <p>
+     * NOTE: There must be at least one inequality constraint provided, via {@link LinearInequalityConstraint},
+     * {@link InequalityConstraintSet}, etc.
+     * <p>
+     * NOTE: all parameters are also passed to {@link NewtonOptimizer}, and so
+     * for example setting {@link ConvergenceEpsilon} here will also set it for inner calls to {@link NewtonOptimizer}. However, any
+     * settings passed via {@link InnerOptimizationData} are applied last for {@link NewtonOptimizer}, and so will have precedence.
+     * <p>
+     * @param optData list of {@link OptimizationData} arguments
+     * @return a {@link PointValuePair} where the first element is a feasible point (x), or the point "nearest to feasible"
+     * in the sense of minimizing the maximum distance to a constraint surface. The second value is the maximum
+     * value f[k](x) over all given constraint functions f[k]. If this value is negative, then (x) is feasible. If the value
+     * is &gt; 0, then the constraints cannot be satisfied simultaneously.
+     */
     public static PointValuePair feasiblePoint(OptimizationData... optData) {
         double epsilon = 1e-10;
         RealVector initialGuess = null;
@@ -87,10 +132,8 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
                 continue;
             }
             if (data instanceof LinearInequalityConstraint) {
-                RealMatrix A = ((LinearInequalityConstraint)data).A;
-                RealVector b = ((LinearInequalityConstraint)data).b;
-                for (int j = 0; j < b.getDimension(); ++j)
-                    ineqConstraints.add(new LinearFunction(A.getRowVector(j), b.getEntry(j)));
+                for (TwiceDifferentiableFunction f: ((LinearInequalityConstraint)data).lcf)
+                    ineqConstraints.add(f);
                 continue;
             }
             if (data instanceof InequalityConstraintSet) {
@@ -196,7 +239,11 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         return s;
     }
 
-    // known dense Matrix classes
+    /**
+     * Determine if a {@link RealMatrix} subclass is a dense format or not
+     * @param M The matrix to test
+     * @return true if matrix is known to be a dense format, false otherwise.
+     */
     public static boolean isDense(RealMatrix M) {
         if (M instanceof Array2DRowRealMatrix) return true;
         if (M instanceof BlockRealMatrix) return true;

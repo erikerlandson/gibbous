@@ -18,11 +18,20 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
+/**
+ * A linear function b.x + c; The gradient is b, and the Hessian is |0| (all zeros).
+ */
 public class LinearFunction extends TwiceDifferentiableFunction {
     private final RealVector b;
     private final double c;
     private final int n;
 
+    /**
+     * Construct a linear function b.x + c
+     *
+     * @param b a weight vector
+     * @param c a constant
+     */
     public LinearFunction(RealVector b, double c) {
         int d = b.getDimension();
         if (d < 1) throw new IllegalArgumentException("Dimension must be nonzero");
@@ -31,6 +40,12 @@ public class LinearFunction extends TwiceDifferentiableFunction {
         this.n = d;
     }
 
+    /**
+     * Construct a linear function b.x + c
+     *
+     * @param b a weight vector
+     * @param c a constant
+     */
     public LinearFunction(double[] b, double c) {
         this(new ArrayRealVector(b), c);
     }

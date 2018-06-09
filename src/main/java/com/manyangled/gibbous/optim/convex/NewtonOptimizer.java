@@ -23,7 +23,23 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
-// Algorithm 10.2
+/**
+ * Implements convex optimization, using Newton's method.
+ * Supports linear equality constraints and infeasible starting point<p>
+ * (Algorithm 10.2) from Convex Optimization, Boyd and Vandenberghe, Cambridge University Press, 2008.
+ * <p>
+ * {@link BarrierOptimizer} supports the following {@link OptimizationData} parameters as arguments
+ * to {@link #optimize(OptimizationData...)}:
+ * <ul>
+ *   <li>convex objective function: ObjectiveFunction - mandatory: must contain a {@link TwiceDifferentiableFunction} </li>
+ *   <li>initial guess: InitialGuess - mandatory: need not satisfy equality constraints </li>
+ *   <li>linear equality constraints: {@link LinearEqualityConstraint} - optional </li>
+ *   <li>convergence epsilon: {@link ConvergenceEpsilon} - optional </li>
+ *   <li>backtracking alpha: {@link BacktrackAlpha} - optional </li>
+ *   <li>backtracking beta: {@link BacktrackBeta} - optional </li>
+ *   <li>KKT equations solver: {@link KKTSolver} - optional </li>
+ * </ul>
+ */
 public class NewtonOptimizer extends ConvexOptimizer {
     private LinearEqualityConstraint eqConstraint;
     private KKTSolver kktSolver = new CholeskySchurKKTSolver();

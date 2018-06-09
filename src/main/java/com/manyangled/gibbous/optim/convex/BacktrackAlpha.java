@@ -15,8 +15,19 @@ package com.manyangled.gibbous.optim.convex;
 
 import org.apache.commons.math3.optim.OptimizationData;
 
+/**
+ * The backtracking alpha parameter, used in {@link NewtonOptimizer}.
+ * As described in (Algorithm 9.2) of
+ * Convex Optimization, Boyd and Vandenberghe, Cambridge University Press, 2008.
+ */
 public class BacktrackAlpha implements OptimizationData {
     public final double alpha;
+
+    /**
+     * Construct a backtracking alpha parameter
+     *
+     * @param a the value for alpha. Must be on interval (0,1/2)
+     */
     public BacktrackAlpha(double a) {
         if ((a <= 0.0) || (a >= 0.5))
             throw new IllegalArgumentException("alpha must be on (0,1/2)");

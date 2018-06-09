@@ -19,6 +19,20 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 import org.apache.commons.math3.linear.DecompositionSolver;
 
+/**
+ * Solves KKT conditions for {@link NewtonOptimizer}, using Schur block factorization and
+ * SVD decomposition.
+ * <p>
+ * Implements (Algorithm 10.3) and Step 1 of (Algorithm 9.5) from
+ * Convex Optimization, Boyd and Vandenberghe, Cambridge University Press, 2008.
+ * <p>
+ * This {@link KKTSolver} is capable of solving in the presence of matrices of less
+ * than full rank (e.g. positive semidefinite), but whether or not these solutions
+ * will yield good optimization vectors is very situation-dependent. It is also a bit
+ * slower than the default solver. Should be used with caution. 
+ * <p>
+ * See also {@link CholeskySchurKKTSolver}
+ */
 public class SVDSchurKKTSolver extends KKTSolver {
     // step 1 of algorithm 9.5
     public KKTSolution solve(final RealMatrix H, final RealVector g) {

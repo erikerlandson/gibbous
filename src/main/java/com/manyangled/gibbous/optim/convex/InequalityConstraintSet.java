@@ -18,14 +18,29 @@ import java.util.Collection;
 
 import org.apache.commons.math3.optim.OptimizationData;
 
+/**
+ * A collection of convex constraint functions. A constraint f is satisfied by x if
+ * and only if f(x) &lt; 0. Constraints contained in this object are appended to the
+ * list of constraints applied by a convex optimizer. Currently used by
+ * {@link BarrierOptimizer} and {@link ConvexOptimizer#feasiblePoint(OptimizationData... optData)}
+ */
 public class InequalityConstraintSet implements OptimizationData {
     public final ArrayList<TwiceDifferentiableFunction> constraints =
         new ArrayList<TwiceDifferentiableFunction>();
 
+    /**
+     * Construct an inequality constraint set from a Collection of convex constraint functions
+     * @param constraints the Collection of constraint functions to apply
+     */
     public InequalityConstraintSet(Collection<TwiceDifferentiableFunction> constraints) {
         this.constraints.addAll(constraints);
     }
 
+    /**
+     * Construct an inequality constraint set from an argument list (or array) of convex
+     * constraint functions
+     * @param constraints the list of constraint functions to apply
+     */
     public InequalityConstraintSet(TwiceDifferentiableFunction... constraints) {
         for (TwiceDifferentiableFunction f: constraints)
             this.constraints.add(f);

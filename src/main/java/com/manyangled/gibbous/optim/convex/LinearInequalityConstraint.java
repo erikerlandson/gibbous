@@ -20,18 +20,32 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
+/**
+ * A set of linear inequality constraints expressed as Ax &lt; b
+ */
 public class LinearInequalityConstraint implements OptimizationData {
-    public final RealMatrix A;
-    public final RealVector b;
+    /** The corresponding set of individual linear constraint functions */
+    public final LinearFunction[] lcf;
 
+    /**
+     * Construct a set of linear inequality constraints from Ax &lt; B
+     * @param A A matrix linear coefficient vectors
+     * @param b A vector of constants
+     */
     public LinearInequalityConstraint(final RealMatrix A, final RealVector b) {
         int k = A.getRowDimension();
         if (b.getDimension() != k)
             throw new DimensionMismatchException(b.getDimension(), k);
-        this.A = A;
-        this.b = b;
+        this.lcf = new LinearFunction[k];
+        for (int j = 0; j < k; ++j)
+            lcf[j] = new LinearFunction(A.getRowVector(j), -b.getEntry(j));
     }
 
+    /**
+     * Construct a set of linear inequality constraints from Ax &lt; B
+     * @param A A matrix linear coefficient vectors
+     * @param b A vector of constants
+     */
     public LinearInequalityConstraint(final double[][] A, final double[] b) {
         this(new Array2DRowRealMatrix(A), new ArrayRealVector(b));
     }

@@ -20,16 +20,27 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
+/**
+ * Given a set of convex functions f[k] for k = 1,2,..., implements the smooth-max
+ * over f[k]: (1/a)log(sum(e^(a f[k]))).
+ * See also: http://erikerlandson.github.io/blog/2018/05/27/the-gradient-and-hessian-of-the-smooth-max-over-functions/
+ */
 public class SmoothMaxFunction extends TwiceDifferentiableFunction {
     private final double alpha;
     private final TwiceDifferentiableFunction[] f;
 
+    /**
+     * Construct a smooth-max function over a collection of convex functions
+     *
+     * @param alpha A weighting parameter
+     * @param f A collection of convex functions
+     */
     public SmoothMaxFunction(double alpha, TwiceDifferentiableFunction... f) {
         if (f.length < 1) throw new IllegalArgumentException("list of functions must be nonempty");
         this.alpha = alpha;
         this.f = f;
     }
-    
+
     @Override
     public int dim() { return f[0].dim(); }
 
@@ -85,6 +96,8 @@ public class SmoothMaxFunction extends TwiceDifferentiableFunction {
         return h;
     }
 
+    // Pre-computes z, the maximum of f[k](x), and also e^(α(f[k]-z)) for each f[k].
+    // See: http://erikerlandson.github.io/blog/2018/05/28/computing-smooth-max-and-its-gradients-without-over-and-underflow/
     private Pair<Double, double[]> precompute(final RealVector x) {
         double[] exp = new double[f.length];
         double z = Double.NEGATIVE_INFINITY;

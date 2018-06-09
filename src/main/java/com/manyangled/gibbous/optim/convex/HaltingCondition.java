@@ -18,8 +18,24 @@ import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.optim.ConvergenceChecker;
 import org.apache.commons.math3.linear.RealVector;
 
+/**
+ * Represents a custom halting condition that will cause an optimization to
+ * stop iterating if it returns true.
+ * <p>
+ * An example application is {@link ConvexOptimizer.NegChecker}, which halts
+ * an optimization during search for a feasible point if such a point is 
+ * discovered.
+ * <p>
+ * This class is intended primarily for internal use by library algorithms.
+ * Use with caution.
+ */
 public class HaltingCondition implements OptimizationData {
     public final ConvergenceChecker<Pair<RealVector, Double> > checker;
+
+    /**
+     * Construct a halting condition from a {@link ConvergenceChecker}
+     * @param checker the convergence checker to use as the test for halting condition
+     */
     public HaltingCondition(ConvergenceChecker<Pair<RealVector, Double> > checker) {
         this.checker = checker;
     }

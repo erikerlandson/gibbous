@@ -18,12 +18,20 @@ import org.apache.commons.math3.linear.RealVector;
 
 import static com.manyangled.gibbous.optim.convex.ConvexOptimizer.isDense;
 
-// f -> af + b
+/**
+ * Applies a linear transform to a function, from f(x) to t(x) = af(x) + b
+ */
 public class LinearTransformFunction extends TwiceDifferentiableFunction {
     private final double a;
     private final double b;
     private final TwiceDifferentiableFunction f;
 
+    /**
+     * construct a linear transform, af(x) + b, of a function f(x)
+     * @param a the linear coefficient
+     * @param b a constant
+     * @param f the function
+     */
     public LinearTransformFunction(
         final double a, final double b,
         final TwiceDifferentiableFunction f) {

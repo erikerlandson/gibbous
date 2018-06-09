@@ -25,14 +25,24 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
-// Given A, b, c, implements 0.5*(x^T)A(x) + b.x + c
-// Note, gradient is A(x) + b, and the hessian is A
+/**
+ * Given A, b, c, implements 0.5*(x^T)A(x) + b.x + c;
+ * The gradient is A(x) + b, and the Hessian is A
+ */
 public class QuadraticFunction extends TwiceDifferentiableFunction {
     private final RealMatrix A;
     private final RealVector b;
     private final double c;
     private final int n;
 
+    /**
+     * Construct quadratic function 0.5*(x^T)A(x) + b.x + c
+     *
+     * @param A square matrix of weights for quadratic terms.
+     * Typically expected to be positive definite or positive semi-definite.
+     * @param b vector of weights for linear terms.
+     * @param c a constant
+     */
     public QuadraticFunction(RealMatrix A, RealVector b, double c) {
         int d = b.getDimension();
         if (d < 1) throw new IllegalArgumentException("Dimension must be nonzero");
@@ -45,6 +55,14 @@ public class QuadraticFunction extends TwiceDifferentiableFunction {
         this.n = d;
     }
 
+    /**
+     * Construct quadratic function 0.5*(x^T)A(x) + b.x + c
+     *
+     * @param A square matrix of weights for quadratic terms.
+     * Typically expected to be positive definite or positive semi-definite.
+     * @param b vector of weights for linear terms.
+     * @param c a constant
+     */
     public QuadraticFunction(double[][] A, double[] b, double c) {
         this(new Array2DRowRealMatrix(A), new ArrayRealVector(b), c);
     }
@@ -70,6 +88,15 @@ public class QuadraticFunction extends TwiceDifferentiableFunction {
         return A.copy();
     }
 
+    /**
+     * Create a quadratic function that corresponds to s(x-c).s(x-c) &lt; r^2.
+     * That is, constrained to an n-dimensional ball of radius r, with scaling factor s.
+     *
+     * @param center the center of the n-ball
+     * @param r a radius, &gt; 0
+     * @param s a scaling constant, &gt; 0
+     * @return quadratic constraint function for the n-ball constraint
+     */
     public static QuadraticFunction nBallConstraintFunction(RealVector center, double r, double s) {
         int n = center.getDimension();
         if (n < 1) throw new IllegalArgumentException("center vector must have dimension > 0");
@@ -83,14 +110,39 @@ public class QuadraticFunction extends TwiceDifferentiableFunction {
         return new QuadraticFunction(A, b, c);
     }
 
+    /**
+     * Create a quadratic function that corresponds to s(x-c).s(x-c) &lt; r^2.
+     * That is, constrained to an n-dimensional ball of radius r, with scaling factor s.
+     *
+     * @param center the center of the n-ball
+     * @param r a radius, &gt; 0
+     * @param s a scaling constant, &gt; 0
+     * @return quadratic constraint function for the n-ball constraint
+     */
     public static QuadraticFunction nBallConstraintFunction(double[] center, double r, double s) {
-        return nBallConstraintFunction(new ArrayRealVector(center), r, s);
+        return nBallConstraintFunction(new ArrayRealVector(center, false), r, s);
     }
 
+    /**
+     * Create a quadratic function that corresponds to (x-c).(x-c) &lt; r^2.
+     * That is, constrained to an n-dimensional ball of radius r
+     *
+     * @param center the center of the n-ball
+     * @param r a radius, &gt; 0
+     * @return quadratic constraint function for the n-ball constraint
+     */
     public static QuadraticFunction nBallConstraintFunction(RealVector center, double r) {
         return nBallConstraintFunction(center, r, 1.0);
     }
 
+    /**
+     * Create a quadratic function that corresponds to (x-c).(x-c) &lt; r^2.
+     * That is, constrained to an n-dimensional ball of radius r
+     *
+     * @param center the center of the n-ball
+     * @param r a radius, &gt; 0
+     * @return quadratic constraint function for the n-ball constraint
+     */
     public static QuadraticFunction nBallConstraintFunction(double[] center, double r) {
         return nBallConstraintFunction(new ArrayRealVector(center), r, 1.0);
     }    

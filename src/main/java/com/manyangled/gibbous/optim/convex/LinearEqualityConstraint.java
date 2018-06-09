@@ -20,11 +20,19 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 
-// Represents a set of linear equality constraints given as Ax = b
+/**
+ * Represents a set of linear equality constraints given as Ax = b.
+ */
 public class LinearEqualityConstraint implements OptimizationData {
     public final RealMatrix A;
     public final RealVector b;
 
+    /**
+     * Construct a set of linear equality constraints Ax = b.
+     * Represents equations A[i].x = b[i], for each row of A.
+     * @param A the matrix of linear weights
+     * @param b the vector of constants
+     */
     public LinearEqualityConstraint(final RealMatrix A, final RealVector b) {
         int k = A.getRowDimension();
         if (b.getDimension() != k)
@@ -33,6 +41,12 @@ public class LinearEqualityConstraint implements OptimizationData {
         this.b = b;
     }
 
+    /**
+     * Construct a set of linear equality constraints Ax = b.
+     * Represents equations A[i].x = b[i], for each row of A.
+     * @param A the matrix of linear weights
+     * @param b the vector of constants
+     */    
     public LinearEqualityConstraint(final double[][] A, final double[] b) {
         this(new Array2DRowRealMatrix(A), new ArrayRealVector(b));
     }

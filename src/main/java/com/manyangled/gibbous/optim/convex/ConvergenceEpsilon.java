@@ -21,14 +21,14 @@ import org.apache.commons.math3.optim.OptimizationData;
  */
 public class ConvergenceEpsilon implements OptimizationData {
     /**
-     * The actual epsilon value. Strictly > 0.
+     * The actual epsilon value. Strictly &gt; 0.
      */
     public final double epsilon;
 
     /**
      * Construct a new ConvergenceEpsilon parameter with the given epsilon value
      *
-     * @param eps The epsilon value to use. Must be strictly > 0.
+     * @param eps The epsilon value to use. Must be strictly &gt; 0.
      */
     public ConvergenceEpsilon(double eps) {
         if (eps <= 0.0)

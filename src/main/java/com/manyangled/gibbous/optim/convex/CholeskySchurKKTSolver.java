@@ -19,6 +19,17 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.CholeskyDecomposition;
 import org.apache.commons.math3.linear.DecompositionSolver;
 
+/**
+ * Solves KKT conditions for {@link NewtonOptimizer}, using Schur block factorization and
+ * Cholesky decomposition.
+ * <p>
+ * Implements (Algorithm 10.3) and Step 1 of (Algorithm 9.5) from
+ * Convex Optimization, Boyd and Vandenberghe, Cambridge University Press, 2008.
+ * <p>
+ * This is currently the default {@link KKTSolver} for {@link NewtonOptimizer}.
+ * <p>
+ * See also {@link SVDSchurKKTSolver}
+ */
 public class CholeskySchurKKTSolver extends KKTSolver {
     // step 1 of algorithm 9.5
     public KKTSolution solve(final RealMatrix H, final RealVector g) {

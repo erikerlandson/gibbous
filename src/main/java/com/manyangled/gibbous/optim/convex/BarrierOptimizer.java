@@ -26,6 +26,29 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
+/**
+ * An optimizer that can minimize a convex function in the presence of a set of
+ * convex inequality constraints and linear equality constraints.
+ * <p>
+ * An implementation of the Barrier Method (Algorithm 11.1) from
+ * Convex Optimization, Boyd and Vandenberghe, Cambridge University Press, 2008.
+ * <p>
+ * {@link BarrierOptimizer} supports the following {@link OptimizationData} parameters as arguments
+ * to {@link #optimize(OptimizationData...)}:
+ * <ul>
+ *   <li>convex objective function: {@link ObjectiveFunction} - mandatory: must contain a {@link TwiceDifferentiableFunction} </li>
+ *   <li>initial guess: {@link InitialGuess} - mandatory: must be strictly feasible w.r.t. all inequality constraints. </li>
+ *   <li>convex inequality constraints: {@link InequalityConstraintSet} - optional </li>
+ *   <li>linear inequality constraints: {@link LinearInequalityConstraint} - optional </li>
+ *   <li>linear equality constraints: {@link LinearEqualityConstraint} - optional </li>
+ *   <li>convergence epsilon: {@link ConvergenceEpsilon} - optional </li>
+ *   <li>inner optimizer parameters: {@link InnerOptimizationData} - optional: passed down to {@link NewtonOptimizer} inner calls. </li>
+ * </ul>
+ * <p>
+ * NOTE: all parameters to {@link #optimize(OptimizationData...)} are also passed to {@link NewtonOptimizer}, and so
+ * for example setting {@link ConvergenceEpsilon} here will also set it for inner calls to {@link NewtonOptimizer}. However, any
+ * settings passed via {@link InnerOptimizationData} are applied last for {@link NewtonOptimizer}, and so will have precedence.
+ */
 public class BarrierOptimizer extends ConvexOptimizer {
     private ArrayList<TwiceDifferentiableFunction> constraintFunctions =
         new ArrayList<TwiceDifferentiableFunction>();
@@ -71,11 +94,8 @@ public class BarrierOptimizer extends ConvexOptimizer {
                 continue;
             }
             if (data instanceof LinearInequalityConstraint) {
-                RealMatrix A = ((LinearInequalityConstraint)data).A;
-                RealVector b = ((LinearInequalityConstraint)data).b;
-                for (int k = 0; k < b.getDimension(); ++k) {
-                    constraintFunctions.add(new LinearFunction(A.getRowVector(k), b.getEntry(k)));
-                }
+                for (TwiceDifferentiableFunction f: ((LinearInequalityConstraint)data).lcf)
+                    constraintFunctions.add(f);
                 continue;
             }
             if (data instanceof InequalityConstraintSet) {

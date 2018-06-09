@@ -27,6 +27,7 @@ public abstract class TwiceDifferentiableFunction implements MultivariateFunctio
     /**
      * Returns the dimensionality of the function domain.
      * If dim() returns (n) then this function expects an n-vector as its input.
+     * @return the expected dimension of the function's domain
      */
     public abstract int dim();
     
