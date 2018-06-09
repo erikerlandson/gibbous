@@ -34,4 +34,8 @@ scalacOptions in (Compile, doc) ++= Seq("-doc-root-content", baseDirectory.value
 
 enablePlugins(JavaUnidocPlugin, GenJavadocPlugin, GhpagesPlugin)
 
+siteSubdirName in JavaUnidoc := "java/api"
+
+addMappingsToSiteDir(mappings in (JavaUnidoc, packageDoc), siteSubdirName in JavaUnidoc)
+
 git.remoteRepo := "git@github.com:erikerlandson/gibbous.git"
