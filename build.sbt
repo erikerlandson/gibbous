@@ -32,7 +32,7 @@ scalacOptions in (Compile, doc) ++= Seq("-doc-root-content", baseDirectory.value
 
 // xsbt unidoc; xsbt previewSite; xsbt ghpagesPushSite
 
-enablePlugins(JavaUnidocPlugin, GenJavadocPlugin, GhpagesPlugin)
+enablePlugins(JavaUnidocPlugin, GenJavadocPlugin, PublishJavadocPlugin, GhpagesPlugin)
 
 siteSubdirName in JavaUnidoc := "java/api"
 
