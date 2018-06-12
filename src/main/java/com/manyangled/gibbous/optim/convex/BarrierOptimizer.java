@@ -54,7 +54,8 @@ public class BarrierOptimizer extends ConvexOptimizer {
         new ArrayList<TwiceDifferentiableFunction>();
     private RealVector xStart;
     private double epsilon = 1e-10;
-    private double mu = 10.0;
+    private double mu = BarrierMu.BARRIER_MU_DEFAULT;
+    private double t0 = BarrierMu.BARRIER_T0_DEFAULT;
     private OptimizationData[] odType = new OptimizationData[0];
     private HaltingCondition halting;
     private ArrayList<OptimizationData> newtonArgs = new ArrayList<OptimizationData>();
@@ -92,6 +93,10 @@ public class BarrierOptimizer extends ConvexOptimizer {
             if (data instanceof ConvergenceEpsilon) {
                 epsilon = ((ConvergenceEpsilon)data).epsilon;
                 continue;
+            }
+            if (data instanceof BarrierMu) {
+                mu = ((BarrierMu)data).mu;
+                t0 = ((BarrierMu)data).t0;
             }
             if (data instanceof LinearInequalityConstraint) {
                 for (TwiceDifferentiableFunction f: ((LinearInequalityConstraint)data).lcf)
@@ -137,7 +142,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
             return newton.optimize(args.toArray(odType));
         }
         RealVector x = xStart;
-        for (double t = 1.0 ; (t * epsilon) <= m ; t *= mu) {
+        for (double t = t0; (t * epsilon) <= m ; t *= mu) {
             TwiceDifferentiableFunction bf = new LogBarrierFunction(t, convexObjective, constraintFunctions);
             NewtonOptimizer newton = new NewtonOptimizer();
             ArrayList<OptimizationData> args = (ArrayList<OptimizationData>)newtonArgs.clone();
