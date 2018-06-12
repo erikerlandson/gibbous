@@ -46,7 +46,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
     private RealVector xStart;
     private double epsilon = ConvergenceEpsilon.CONVERGENCE_EPSILON_DEFAULT;
     private double alpha = BacktrackAlpha.BACKTRACK_ALPHA_DEFAULT;
-    private double beta = 0.5;
+    private double beta = BacktrackBeta.BACKTRACK_BETA_DEFAULT;
     private HaltingCondition halting;
 
     public NewtonOptimizer() {

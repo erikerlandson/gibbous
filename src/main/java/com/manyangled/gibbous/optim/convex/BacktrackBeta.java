@@ -33,4 +33,6 @@ public class BacktrackBeta implements OptimizationData {
             throw new IllegalArgumentException("beta must be on (0,1)");
         this.beta = b;
     }
+
+    public static final double BACKTRACK_BETA_DEFAULT = 0.5;
 }
