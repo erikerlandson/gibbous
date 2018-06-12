@@ -30,6 +30,7 @@ import org.apache.commons.math3.optim.InitialGuess;
 import com.manyangled.gibbous.optim.convex.BarrierOptimizer;
 import com.manyangled.gibbous.optim.convex.QuadraticFunction;
 import com.manyangled.gibbous.optim.convex.LinearInequalityConstraint;
+import com.manyangled.gibbous.optim.convex.LinearEqualityConstraint;
 
 import static com.manyangled.gibbous.COTestingUtils.translatedQF;
 import static com.manyangled.gibbous.COTestingUtils.eps;
@@ -119,4 +120,28 @@ public class BarrierOptimizerTest {
         assertEquals(vminTarget, vmin, eps);
     }
 
+    @Test
+    public void testIneqAndEqConstraints2D() {
+        QuadraticFunction q = new QuadraticFunction(
+            new double[][] { { 1.0, 0.0 }, { 0.0, 1.0 } },
+            new double[] { 0.0, 0.0 },
+            0.0);
+        double[] ig = { 10.0, 10.0 };
+        double[] xminTarget = { 1.0, 1.0 };
+        double vminTarget = 1.0;
+        BarrierOptimizer barrier = new BarrierOptimizer();
+        PointValuePair pvp = barrier.optimize(
+            new ObjectiveFunction(q),
+            new LinearInequalityConstraint(
+                new double[][] { { -1.0, 0.0 } }, // constraint x > 1,
+                new double[] { -1.0 }),
+            new LinearEqualityConstraint(
+                new double[][] { { 0.0, 1.0 } },  // constraint y = 1,
+                new double[] { 1.0 }),
+            new InitialGuess(ig));
+        double[] xmin = pvp.getFirst();
+        double vmin = pvp.getSecond();
+        assertArrayEquals(xminTarget, xmin, eps);
+        assertEquals(vminTarget, vmin, eps);
+    }
 }
