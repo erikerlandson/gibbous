@@ -126,7 +126,6 @@ public class BarrierOptimizerTest {
             new double[][] { { 1.0, 0.0 }, { 0.0, 1.0 } },
             new double[] { 0.0, 0.0 },
             0.0);
-        double[] ig = { 10.0, 10.0 };
         double[] xminTarget = { 1.0, 1.0 };
         double vminTarget = 1.0;
         BarrierOptimizer barrier = new BarrierOptimizer();
@@ -138,7 +137,7 @@ public class BarrierOptimizerTest {
             new LinearEqualityConstraint(
                 new double[][] { { 0.0, 1.0 } },  // constraint y = 1,
                 new double[] { 1.0 }),
-            new InitialGuess(ig));
+            new InitialGuess(new double[] { 10.0, 10.0 }));
         double[] xmin = pvp.getFirst();
         double vmin = pvp.getSecond();
         assertArrayEquals(xminTarget, xmin, eps);
