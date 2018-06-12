@@ -33,4 +33,6 @@ public class BacktrackAlpha implements OptimizationData {
             throw new IllegalArgumentException("alpha must be on (0,1/2)");
         this.alpha = a;
     }
+
+    public static final double BACKTRACK_ALPHA_DEFAULT = 0.25;
 }
