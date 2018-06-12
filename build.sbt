@@ -2,11 +2,11 @@ name := "gibbous"
 
 organization := "com.manyangled"
 
-version := "0.1.0-SNAPSHOT"
+version := "0.1.0-pilot"
 
-scalaVersion := "2.11.8"
+crossPaths := false // drop off Scala suffix from artifact names.
 
-crossScalaVersions := Seq("2.11.8", "2.12.4")
+autoScalaLibrary := false // exclude scala-library from dependencies
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
@@ -14,10 +14,8 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.apache.commons" % "commons-math3" % "3.6.1",
-  //"com.manyangled" %% "gnuplot4s" % "0.1.0-local-deedf561" % Test,
+  "org.apache.commons" % "commons-math3" % "3.6.1" % Provided,
   "com.novocode" % "junit-interface" % "0.11" % Test
-  //"org.scalatest" %% "scalatest" % "3.0.5" % Test
 )
 
 licenses += ("Apache-2.0", url("http://opensource.org/licenses/Apache-2.0"))
@@ -30,7 +28,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 scalacOptions in (Compile, doc) ++= Seq("-doc-root-content", baseDirectory.value+"/root-doc.txt")
 
-// xsbt unidoc; xsbt previewSite; xsbt ghpagesPushSite
+// xsbt clean xsbt unidoc; xsbt previewSite; xsbt ghpagesPushSite  // do clean first!
 
 enablePlugins(JavaUnidocPlugin, GenJavadocPlugin, PublishJavadocPlugin, GhpagesPlugin)
 
