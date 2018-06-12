@@ -44,7 +44,7 @@ public class NewtonOptimizer extends ConvexOptimizer {
     private LinearEqualityConstraint eqConstraint;
     private KKTSolver kktSolver = new CholeskySchurKKTSolver();
     private RealVector xStart;
-    private double epsilon = 1e-10;
+    private double epsilon = ConvergenceEpsilon.CONVERGENCE_EPSILON_DEFAULT;
     private double alpha = 0.25;
     private double beta = 0.5;
     private HaltingCondition halting;

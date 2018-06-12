@@ -35,4 +35,7 @@ public class ConvergenceEpsilon implements OptimizationData {
             throw new IllegalArgumentException("epsilon must be > 0");
         this.epsilon = eps;
     }
+
+    /** Default convergence epsilon value */
+    public static final double CONVERGENCE_EPSILON_DEFAULT = 1e-10;
 }

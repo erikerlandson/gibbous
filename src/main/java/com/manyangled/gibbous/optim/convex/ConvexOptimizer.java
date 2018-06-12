@@ -114,7 +114,7 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
      * is &gt; 0, then the constraints cannot be satisfied simultaneously.
      */
     public static PointValuePair feasiblePoint(OptimizationData... optData) {
-        double epsilon = 1e-10;
+        double epsilon = ConvergenceEpsilon.CONVERGENCE_EPSILON_DEFAULT;
         RealVector initialGuess = null;
         ArrayList<OptimizationData> barrierArgs = new ArrayList<OptimizationData>();
         ArrayList<TwiceDifferentiableFunction> ineqConstraints =

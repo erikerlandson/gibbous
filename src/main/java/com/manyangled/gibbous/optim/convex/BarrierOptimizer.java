@@ -53,7 +53,7 @@ public class BarrierOptimizer extends ConvexOptimizer {
     private ArrayList<TwiceDifferentiableFunction> constraintFunctions =
         new ArrayList<TwiceDifferentiableFunction>();
     private RealVector xStart;
-    private double epsilon = 1e-10;
+    private double epsilon = ConvergenceEpsilon.CONVERGENCE_EPSILON_DEFAULT;
     private double mu = BarrierMu.BARRIER_MU_DEFAULT;
     private double t0 = BarrierMu.BARRIER_T0_DEFAULT;
     private OptimizationData[] odType = new OptimizationData[0];
