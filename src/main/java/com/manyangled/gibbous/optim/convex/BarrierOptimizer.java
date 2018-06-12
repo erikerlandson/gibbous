@@ -42,6 +42,7 @@ import org.apache.commons.math3.linear.ArrayRealVector;
  *   <li>linear inequality constraints: {@link LinearInequalityConstraint} - optional </li>
  *   <li>linear equality constraints: {@link LinearEqualityConstraint} - optional </li>
  *   <li>convergence epsilon: {@link ConvergenceEpsilon} - optional </li>
+ *   <li>objective scale factor: {@link BarrierMu} - optional </li>
  *   <li>inner optimizer parameters: {@link InnerOptimizationData} - optional: passed down to {@link NewtonOptimizer} inner calls. </li>
  * </ul>
  * <p>
