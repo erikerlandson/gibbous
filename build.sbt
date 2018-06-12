@@ -2,7 +2,7 @@ name := "gibbous"
 
 organization := "com.manyangled"
 
-version := "0.1.0-pilot"
+version := "0.1.0"
 
 crossPaths := false // drop off Scala suffix from artifact names.
 

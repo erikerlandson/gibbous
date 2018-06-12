@@ -6,6 +6,21 @@ Implementation of the Barrier Method from §11.3 of _Convex Optimization_, Boyd 
 ### Documentation
 Full API javadoc is available at: https://erikerlandson.github.io/gibbous/java/api/
 
+Some examples are included below.
+
+### How to include `gibbous` in your project
+`gibbous` is a java project, and so can be used either with java or scala.
+It is built against apache commons math-3, which you must include
+in your project dependencies, as shown below.
+
+```scala
+resolvers += "manyangled" at "https://dl.bintray.com/manyangled/maven/"
+
+libraryDependencies ++= Seq(
+  "com.manyangled" % "gibbous" % "0.1.0",
+  "org.apache.commons" % "commons-math3" % "3.6.1")
+```
+
 ### Examples
 
 ##### Minimize a convex function under constraints
