@@ -48,7 +48,7 @@ public class BarrierMu implements OptimizationData {
     }
 
     /** Default value for mu */
-    public static final double BARRIER_MU_DEFAULT = 10.0;
+    public static final double BARRIER_MU_DEFAULT = 15.0;
     /** Default initial value for (t) */
     public static final double BARRIER_T0_DEFAULT = 1.0;
 }
