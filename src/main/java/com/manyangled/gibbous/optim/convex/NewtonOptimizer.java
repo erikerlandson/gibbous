@@ -119,20 +119,28 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 RealVector grad = convexObjective.gradient(x);
                 RealMatrix hess = convexObjective.hessian(x);
                 KKTSolution sol = kktSolver.solve(hess, grad);
-                //System.out.format("  v=%f  x=%s  g=%s  h= %s  xdel=%s\n", v, x, grad, hess, sol.xDelta);
                 if (sol.lambdaSquared <= (2.0 * epsilon)) break;
                 RealVector xDelta = sol.xDelta;
-                // If the step direction becomes very small that indicates minimum
-                if (xDelta.getNorm() < epsilon) break;
                 double gdd = grad.dotProduct(xDelta);
                 RealVector tx = null;
                 double tv = 0.0;
                 boolean foundStep = false;
-                for (double t = 1.0 ; t >= epsilon ; t *= beta) {
+                for (double t = 1.0; t > 0.0; t *= beta) {
                     tx = x.add(xDelta.mapMultiply(t));
                     tv = convexObjective.value(tx);
-                    if (tv == Double.POSITIVE_INFINITY) continue;
-                    if (tv <= v + t*alpha*gdd) {
+                    if (Double.isInfinite(tv)) {
+                        // this is barrier convention for "outside the feasible domain",
+                        // so try a smaller step
+                        continue;
+                    }
+                    double vtt = v + (t * alpha * gdd);
+                    if (vtt == v) {
+                        // (t)(alpha)(gdd) is less than (v)(machine-epsilon)
+                        // Further tests for improvement are going to fail
+                        break;
+                    }
+                    if (tv <= vtt) {
+                        // This step resulted in an improvement, so halt with success
                         foundStep = true;
                         break;
                     }
@@ -172,20 +180,29 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, A, AT, grad, A.operate(x).subtract(b));
                 RealVector xDelta = sol.xDelta;
                 RealVector nuDelta = sol.nuPlus.subtract(nu);
-                // If step direction delta becomes sufficiently small it indicates minimum
-                if ((xDelta.getNorm() + nuDelta.getNorm()) < epsilon) break;
                 RealVector tx = null;
                 RealVector tnu = null;
                 double tv = 0.0;
                 boolean foundStep = false;
-                for (double t = 1.0 ; t >= epsilon ; t *= beta) {
+                for (double t = 1.0; t > 0.0; t *= beta) {
                     tx = x.add(xDelta.mapMultiply(t));
                     tv = convexObjective.value(tx);
-                    if (tv == Double.POSITIVE_INFINITY) continue;
+                    if (Double.isInfinite(tv)) {
+                        // this is barrier convention for "outside the feasible domain",
+                        // so try a smaller step
+                        continue;
+                    }
+                    double ftt = 1.0 - (alpha * t);
+                    if (ftt == 1.0) {
+                        // (t)(alpha) is less than (machine-epsilon)
+                        // Further tests for improvement are going to fail
+                        break;
+                    }
                     tnu = nu.add(nuDelta.mapMultiply(t));
                     RealVector tgrad = convexObjective.gradient(tx);
                     double tNorm = residualNorm(tx, tnu, tgrad, A, AT, b);
-                    if (tNorm <= (1.0 - alpha*t)*rNorm) {
+                    if (tNorm <= ftt * rNorm) {
+                        // This step resulted in an improvement, so halt with success
                         foundStep = true;
                         break;
                     }
