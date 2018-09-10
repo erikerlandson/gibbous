@@ -34,5 +34,5 @@ public class BacktrackBeta implements OptimizationData {
         this.beta = b;
     }
 
-    public static final double BACKTRACK_BETA_DEFAULT = 0.5;
+    public static final double BACKTRACK_BETA_DEFAULT = 0.8;
 }

@@ -34,5 +34,5 @@ public class BacktrackAlpha implements OptimizationData {
         this.alpha = a;
     }
 
-    public static final double BACKTRACK_ALPHA_DEFAULT = 0.25;
+    public static final double BACKTRACK_ALPHA_DEFAULT = 0.4;
 }
