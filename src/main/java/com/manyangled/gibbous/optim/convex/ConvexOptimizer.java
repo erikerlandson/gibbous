@@ -164,8 +164,6 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         // These are free parameters, and might be exposed to a user, but I'm not currently
         // convinced there's a lot of value to tweaking them.
         final double minNBallFactor = Math.log(1e-3);
-        final double minSigma = 10.0;
-        final double sigmaFactor = 1.5;
         final double targetTolerance = 0.01;
         // Initialize our location and get the maximum over the constraint functions
         RealVector x = initialGuess;
@@ -176,18 +174,16 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         if (s < 0.0 && !hasLinearInequalityConstraint) return new PointValuePair(x.toArray(), s);
         double alpha = 1.0;
         while (true) {
-            //System.out.format("***s= %f  x= %s\n", s, x);
-            // Apply scaling to the n-ball constraint so that it doesn't dominate the location
-            // of the optimal point overly much. This substantially increases the convergence rate.
-            // If the maximum value of the constraint functions grows very large, then that indicates
-            // our current distance to our feasible region is large, so have the scale increase
-            // accordingly. An n-ball constraint is basically squared distance from center, so scale
-            // grows proportionally to sqrt of (s). Sigma-factor is sort of a magic constant hack, but
-            // appears to improve convergence performance.
-            double sigma = minSigma;
-            if (s > 0.0) sigma = Math.max(sigma, sigmaFactor*Math.sqrt(s));
-            // add the n-ball constraint, to guarantee a non-singular hessian
-            TwiceDifferentiableFunction nbc = QuadraticFunction.nBallConstraintFunction(x, 1.0, 1.0/sigma);
+            // Add the n-ball constraint, to guarantee a non-singular hessian
+            // Set the radius to 2x the maximum constraint function value (s). The value (s)
+            // corresponds, roughly, to a distance from the current guess to the nearest constraint
+            // surface, and so setting the radius to (2s) makes it likely that this ball will overlap
+            // the feasible region, to (heuristically) attempt to solve for feasible point in one
+            // iteration. Scale 1/(r^2) is set so that the minimum value (center of the ball)
+            // remains constant as the radius changes, to prevent it from dominating the computation.
+            double radius = Math.max(1.0, 2.0 * s);
+            TwiceDifferentiableFunction nbc =
+                 QuadraticFunction.nBallConstraintFunction(x, radius, 1.0 / (radius * radius));
             ArrayList<TwiceDifferentiableFunction> augConstraints =
                 (ArrayList<TwiceDifferentiableFunction>)(ineqConstraints.clone());
             augConstraints.add(nbc);
