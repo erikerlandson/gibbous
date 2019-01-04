@@ -2,7 +2,7 @@ name := "gibbous"
 
 organization := "com.manyangled"
 
-version := "0.2.0"
+version := "0.2.1-SNAPSHOT"
 
 //publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
 
