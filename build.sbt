@@ -4,6 +4,8 @@ organization := "com.manyangled"
 
 version := "0.1.1"
 
+//publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
+
 crossPaths := false // drop off Scala suffix from artifact names.
 
 autoScalaLibrary := false // exclude scala-library from dependencies
