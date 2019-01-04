@@ -68,4 +68,9 @@ public class LinearFunction extends TwiceDifferentiableFunction {
         // the Hessian is just zero for a linear function
         return new OpenMapRealMatrix(n, n);
     }
+
+    @Override
+    public String toString() {
+        return String.format("LinearFunction(%g, %s)", c, b.toString());
+    }
 }
