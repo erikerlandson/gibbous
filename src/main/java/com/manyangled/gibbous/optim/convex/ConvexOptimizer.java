@@ -174,6 +174,7 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
         // linear equality constraints, in which case just run it through the Newton algorithm to make
         // sure they are satisfied
         if (s < 0.0 && !hasLinearInequalityConstraint) return new PointValuePair(x.toArray(), s);
+        double alpha = 1.0;
         while (true) {
             //System.out.format("***s= %f  x= %s\n", s, x);
             // Apply scaling to the n-ball constraint so that it doesn't dominate the location
@@ -193,7 +194,6 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             // if necessary, tune the smooth-max alpha to guarantee that our n-ball hessian
             // isn't totally washed out.
             double v0 = nbc.value(x);
-            double alpha = 1.0;
             if (v0 < (s + minNBallFactor)) alpha = minNBallFactor / (v0 - s);
             // return the point (x) that minimizes the maximum value of fk(x), and/or (x)
             // where fk(x) is negative for all constraints fk.
@@ -215,6 +215,9 @@ public abstract class ConvexOptimizer extends MultivariateOptimizer {
             // influencing the result, and we've identified our mini-max point, whether
             // it is feasible or not.
             if (xdelta.dotProduct(xdelta) < epsilon) break;
+            // increase alpha as we converge, so that smooth-max more closely approximates true max
+            // see: http://erikerlandson.github.io/blog/2019/01/02/the-smooth-max-minimum-incident-of-december-2018/
+            alpha *= 10.0;
         }
         return new PointValuePair(x.toArray(), s);
     }
