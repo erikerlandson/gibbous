@@ -89,7 +89,7 @@ public class QuadraticFunction extends TwiceDifferentiableFunction {
     }
 
     /**
-     * Create a quadratic function that corresponds to s(x-c).s(x-c) &lt; r^2.
+     * Create a quadratic function that corresponds to s((x-c).(x-c) &lt; r^2).
      * That is, constrained to an n-dimensional ball of radius r, with scaling factor s.
      *
      * @param center the center of the n-ball
@@ -102,16 +102,16 @@ public class QuadraticFunction extends TwiceDifferentiableFunction {
         if (n < 1) throw new IllegalArgumentException("center vector must have dimension > 0");
         if (s <= 0.0) throw new IllegalArgumentException("scale s must be > 0");
         if (r <= 0.0) throw new IllegalArgumentException("radius r must be > 0");
-        double[] all1 = new double[n];
-        java.util.Arrays.fill(all1, s*s);
-        RealMatrix A = new DiagonalMatrix(all1);
-        RealVector b = center.mapMultiply(-(s*s));
-        double c = 0.5 * (s*s*center.dotProduct(center) - r*r);
+        double[] alls = new double[n];
+        java.util.Arrays.fill(alls, s);
+        RealMatrix A = new DiagonalMatrix(alls);
+        RealVector b = center.mapMultiply(-s);
+        double c = 0.5 * ((s * center.dotProduct(center)) - (r * r));
         return new QuadraticFunction(A, b, c);
     }
 
     /**
-     * Create a quadratic function that corresponds to s(x-c).s(x-c) &lt; r^2.
+     * Create a quadratic function that corresponds to s((x-c).(x-c) &lt; r^2).
      * That is, constrained to an n-dimensional ball of radius r, with scaling factor s.
      *
      * @param center the center of the n-ball
