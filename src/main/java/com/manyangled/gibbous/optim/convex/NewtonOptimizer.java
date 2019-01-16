@@ -42,7 +42,7 @@ import org.apache.commons.math3.linear.ArrayRealVector;
  */
 public class NewtonOptimizer extends ConvexOptimizer {
     private LinearEqualityConstraint eqConstraint;
-    private KKTSolver kktSolver = new CholeskySchurKKTSolver();
+    private KKTSolver kktSolver = new SVDSchurKKTSolver();
     private RealVector xStart;
     private double epsilon = ConvergenceEpsilon.CONVERGENCE_EPSILON_DEFAULT;
     private double alpha = BacktrackAlpha.BACKTRACK_ALPHA_DEFAULT;

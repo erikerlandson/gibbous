@@ -27,6 +27,7 @@ import org.apache.commons.math3.linear.SingularValueDecomposition;
 import com.manyangled.gibbous.optim.convex.KKTSolver;
 import com.manyangled.gibbous.optim.convex.KKTSolution;
 import com.manyangled.gibbous.optim.convex.CholeskySchurKKTSolver;
+import com.manyangled.gibbous.optim.convex.SVDSchurKKTSolver;
 
 import static com.manyangled.gibbous.COTestingUtils.eps;
 
@@ -82,6 +83,7 @@ public class KKTSolverTest {
         double[] g = { 1.0, 2.0 };
         double[] h = { 3.0 };
         testWithConstraints(new CholeskySchurKKTSolver(), H, A, g, h);
+        testWithConstraints(new SVDSchurKKTSolver(), H, A, g, h);
     }
 
     @Test
@@ -94,6 +96,7 @@ public class KKTSolverTest {
         double[] g = { 1.0, 4.0, 9.0 };
         double[] h = { 3.0, 7.0 };
         testWithConstraints(new CholeskySchurKKTSolver(), H, A, g, h);
+        testWithConstraints(new SVDSchurKKTSolver(), H, A, g, h);
     }
 
     @Test
@@ -101,6 +104,7 @@ public class KKTSolverTest {
         double[][] H = { { 5.0, 1.0 }, { 1.0, 5.0 } };
         double[] g = { 3.0, 7.0 };
         testNoConstraints(new CholeskySchurKKTSolver(), H, g);
+        testNoConstraints(new SVDSchurKKTSolver(), H, g);
     }
 
     @Test
@@ -110,5 +114,6 @@ public class KKTSolverTest {
                          { 1.0, 2.0, 7.0 } };
         double[] g = { 9.0, 4.0, 1.0 };
         testNoConstraints(new CholeskySchurKKTSolver(), H, g);
+        testNoConstraints(new SVDSchurKKTSolver(), H, g);
     }
 }
