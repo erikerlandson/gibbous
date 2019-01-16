@@ -121,11 +121,13 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, grad);
                 if (sol.lambdaSquared <= (2.0 * epsilon)) break;
                 RealVector xDelta = sol.xDelta;
+                // Halt if there is no further movement in solution space
+                if (xDelta.getNorm() < epsilon) break;
                 double gdd = grad.dotProduct(xDelta);
                 RealVector tx = null;
                 double tv = 0.0;
                 boolean foundStep = false;
-                for (double t = 1.0; t > 0.0; t *= beta) {
+                for (double t = 1.0; t >= BT_T_LB; t *= beta) {
                     tx = x.add(xDelta.mapMultiply(t));
                     tv = convexObjective.value(tx);
                     if (Double.isInfinite(tv)) {
@@ -180,11 +182,13 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, A, AT, grad, A.operate(x).subtract(b));
                 RealVector xDelta = sol.xDelta;
                 RealVector nuDelta = sol.nuPlus.subtract(nu);
+                // Halt if there is no further movement in solution space
+                if (xDelta.getNorm() < epsilon) break;
                 RealVector tx = null;
                 RealVector tnu = null;
                 double tv = 0.0;
                 boolean foundStep = false;
-                for (double t = 1.0; t > 0.0; t *= beta) {
+                for (double t = 1.0; t >= BT_T_LB; t *= beta) {
                     tx = x.add(xDelta.mapMultiply(t));
                     tv = convexObjective.value(tx);
                     if (Double.isInfinite(tv)) {
@@ -235,4 +239,9 @@ public class NewtonOptimizer extends ConvexOptimizer {
         double rr = r.dotProduct(r) + rDual.dotProduct(rDual);
         return Math.sqrt(rr);
     }
+
+    // I used to use a "> 0" lower bound for t in backtracking, but I noticed a
+    // case where t never underflowed to zero, so I am going to set it a bit higher
+    // than the minimum positive value
+    private static final double BT_T_LB = 1e-300;
 }
