@@ -17,7 +17,7 @@ in your project dependencies, as shown below.
 resolvers += "manyangled" at "https://dl.bintray.com/manyangled/maven/"
 
 libraryDependencies ++= Seq(
-  "com.manyangled" % "gibbous" % "0.2.1",
+  "com.manyangled" % "gibbous" % "0.2.2",
   "org.apache.commons" % "commons-math3" % "3.6.1")
 ```
 
