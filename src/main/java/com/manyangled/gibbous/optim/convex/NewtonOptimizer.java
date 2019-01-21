@@ -121,8 +121,6 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, grad);
                 if (sol.lambdaSquared <= (2.0 * epsilon)) break;
                 RealVector xDelta = sol.xDelta;
-                // Halt if there is no further movement in solution space
-                if (xDelta.getNorm() < epsilon) break;
                 double gdd = grad.dotProduct(xDelta);
                 RealVector tx = null;
                 double tv = 0.0;
@@ -154,6 +152,8 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 double vprv = v;
                 x = tx;
                 v = tv;
+                // if improvement becomes very small then we are converged
+                if (Math.abs(1.0 - (v / vprv)) < epsilon) break;
                 // Check halting condition if configured
                 if ((halting != null) && halting.checker.converged(
                         getIterations(),
@@ -182,8 +182,6 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 KKTSolution sol = kktSolver.solve(hess, A, AT, grad, A.operate(x).subtract(b));
                 RealVector xDelta = sol.xDelta;
                 RealVector nuDelta = sol.nuPlus.subtract(nu);
-                // Halt if there is no further movement in solution space
-                if (xDelta.getNorm() < epsilon) break;
                 RealVector tx = null;
                 RealVector tnu = null;
                 double tv = 0.0;
@@ -219,6 +217,8 @@ public class NewtonOptimizer extends ConvexOptimizer {
                 x = tx;
                 nu = tnu;
                 v = tv;
+                // if improvement becomes very small then we are converged
+                if (Math.abs(1.0 - (v / vprv)) < epsilon) break;
                 // check halting condition, if it was configured
                 if ((halting != null) && halting.checker.converged(
                         getIterations(),
