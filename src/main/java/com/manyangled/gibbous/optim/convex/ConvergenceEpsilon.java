@@ -37,5 +37,5 @@ public class ConvergenceEpsilon implements OptimizationData {
     }
 
     /** Default convergence epsilon value */
-    public static final double CONVERGENCE_EPSILON_DEFAULT = 1e-10;
+    public static final double CONVERGENCE_EPSILON_DEFAULT = 1e-9;
 }
