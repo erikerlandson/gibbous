@@ -26,7 +26,7 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import com.manyangled.gibbous.optim.convex.QuadraticFunction;
 
 public class COTestingUtils {
-    public static final double eps = 1e-9;
+    public static final double eps = 1e-8;
 
     public static QuadraticFunction translatedQF(double h, double[] center) {
         double[] all1 = new double[center.length];
