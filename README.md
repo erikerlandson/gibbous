@@ -10,15 +10,15 @@ Some examples are included below.
 
 ### How to include `gibbous` in your project
 `gibbous` is a java project, and so can be used either with java or scala.
-It is built against apache commons math-3, which you must include
-in your project dependencies, as shown below.
+
+Versions prior to `gibbous 0.3.0` were published to bintray,
+which is no longer operative. It is now available through oss.sonatype.org
+
+`gibbous 0.3.0` is equivalent to `0.2.x`, with the exception of now including
+`"org.apache.commons" % "commons-math3" % "3.6.1"` as an explicit dependency.
 
 ```scala
-resolvers += "manyangled" at "https://dl.bintray.com/manyangled/maven/"
-
-libraryDependencies ++= Seq(
-  "com.manyangled" % "gibbous" % "0.2.2",
-  "org.apache.commons" % "commons-math3" % "3.6.1")
+libraryDependencies ++= "com.manyangled" % "gibbous" % "0.3.0"
 ```
 
 ### Examples
