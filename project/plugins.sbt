@@ -1,16 +1,9 @@
-resolvers += Resolver.url(
-  "bintray-sbt-plugin-releases",
-    url("http://dl.bintray.com/content/sbt/sbt-plugin-releases"))(
-        Resolver.ivyStylePatterns)
+resolvers += "jgit-repo" at "https://download.eclipse.org/jgit/maven"
 
-resolvers += "sonatype-releases" at "https://oss.sonatype.org/content/repositories/releases/"
+addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
 
-resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.3")
 
-// addSbtPlugin("me.lessis" % "bintray-sbt" % "0.4.0")
+addSbtPlugin("io.crashbox" % "sbt-gpg" % "0.2.1")
 
-addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.4")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.2")
-
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.1")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.2")
