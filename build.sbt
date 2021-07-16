@@ -24,7 +24,7 @@ publishTo := {
 
 licenses += ("Apache-2.0", url("http://opensource.org/licenses/Apache-2.0"))
 
-homepage := Some(url("https://github.com/isarn/isarn-sketches"))
+homepage := Some(url("https://github.com/erikerlandson/gibbous"))
 
 scmInfo := Some(
   ScmInfo(
